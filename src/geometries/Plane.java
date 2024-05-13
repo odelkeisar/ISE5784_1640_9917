@@ -22,19 +22,19 @@ public class Plane implements Geometry {
      * @param p3 The third point on the plane.
      */
     public Plane(Point p1, Point p2, Point p3) {
-        p = p1; // Assuming p1, p2, p3 are not collinear
-        normal = null; // Calculate normal from p1, p2, p3
+        this.p = p1;
+        this.normal = null;
     }
 
     /**
      * Constructs a new Plane with the specified base point and normal vector.
      *
-     * @param _p      The base point of the plane.
-     * @param _normal The normal vector to the plane.
+     * @param p      The base point of the plane.
+     * @param normal The normal vector to the plane.
      */
-    public Plane(Point _p, Vector _normal) {
-        p = _p;
-        normal = _normal.normalize();
+    public Plane(Point p, Vector normal) {
+        this.p = p;
+        this.normal = normal.normalize();
     }
 
 

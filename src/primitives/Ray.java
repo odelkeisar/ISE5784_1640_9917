@@ -8,7 +8,6 @@ public class Ray {
 
     private final Point head;
 
-
     private final Vector direction;
 
     /**
