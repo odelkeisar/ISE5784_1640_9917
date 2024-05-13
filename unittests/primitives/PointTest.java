@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static primitives.Util.isZero;
 
 /**
- * Unit tests for the Point class.
+ * * Unit tests for {@link primitives.Point} class.
  */
 class PointTest {
     Point  p1         = new Point(1, 2, 3);
@@ -47,7 +47,8 @@ class PointTest {
         // ============ Equivalence Partitions Tests ==============
         // Checking the correctness of the result for add method
         assertEquals(p2 ,p1.add(v1),"ERROR: (point + vector) = other point does not work correctly" );
-        assertEquals(Point.ZERO, p1.add(v1Opposite),"ERROR: (point + vector) = center of coordinates does not work correctly");
+        assertEquals(Point.ZERO, p1.add(v1Opposite),
+                "ERROR: (point + vector) = center of coordinates does not work correctly");
     }
 
     /**
