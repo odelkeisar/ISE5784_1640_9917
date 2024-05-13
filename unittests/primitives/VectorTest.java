@@ -2,6 +2,7 @@ package primitives;
 
 import org.junit.jupiter.api.Test;
 
+import static java.lang.System.out;
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -9,13 +10,24 @@ import static org.junit.jupiter.api.Assertions.*;
  * Unit tests for the Vector class.
  */
 class VectorTest {
+    private final double DELTA = 0.000001;
 
+    /** Test method for {@link primitives.Vector #Vector(double,double, double)}. */
+    @Test
+    public void testConstructor() {
+        // =============== Boundary Values Tests ==================
+
+        // TC01: Exception check for the zero vector
+       assertThrows(IllegalArgumentException.class, () -> new Vector(0,0,0),"Failed constructing a correct vector");
+       assertThrows(IllegalArgumentException.class, () -> new Vector(Double3.ZERO),"Failed constructing a correct vector");
+
+    }
     /**
      * Test method for {@link primitives.Vector#add(primitives.Vector)}.
      */
     @Test
     void testAdd() {
-        // TODO: Implement test cases for the add method
+
     }
 
     /**
