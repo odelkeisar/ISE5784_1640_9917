@@ -2,6 +2,8 @@ package geometries;
 
 import primitives.*;
 
+import static primitives.Util.isZero;
+
 /**
  * Represents a cylinder in 3D space, extending from a tube along its axis with a specified height.
  */
@@ -24,6 +26,21 @@ public class Cylinder extends Tube {
 
 
     public Vector getNormal(Point p) {
-        return null;
+        if ((p.distance(axis.getHead()) <= radius) || (p.distance(axis.getHead().add(axis.getDirection().scale(height))) < radius)) {
+            return axis.getDirection().normalize();
+        }
+        Point p0 = axis.getHead();
+        Vector v = axis.getDirection();
+        //t = v (P – P0)
+        double t = p.subtract(p0).dotProduct(v);
+        // O = P0 + tv
+        // if t is zero, the point is opposite the ray head, return the normalized vector from the point to the ray head
+        if (!isZero(t))
+        {
+            Point o = p0.add(v.scale(t));
+            return p.subtract(o).normalize();
+        }
+        else
+            return p.subtract(p0).normalize();
     }
 }
