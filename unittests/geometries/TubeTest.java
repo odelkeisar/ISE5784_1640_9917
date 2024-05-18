@@ -19,9 +19,6 @@ class TubeTest {
     @Test
     public void testConstructor() {
 
-        Point p = new Point(2, 4, 5);
-        Vector v = new Vector(1, 2, 3);
-
         // =============== Boundary Values Tests ==================
         assertThrows(IllegalArgumentException.class,
                 () -> new Tube(0, new Ray(p, v)),
@@ -40,6 +37,7 @@ class TubeTest {
         assertEquals(new Vector(0, 0, -1), t.getNormal(p1), "ERROR: not the correct normal");
 
         // =============== Boundary Values Tests ==================
+        // if t is zero, the point is opposite the ray head, return the normalized vector from the point to the ray head
         Point p2 = new Point(1, 2, 1);
         assertEquals(new Vector(0, 1, 0), t.getNormal(p2), "ERROR: not the correct normal");
     }

@@ -31,7 +31,7 @@ public class Tube extends RadialGeometry {
         Vector v = axis.getDirection();
         //t = v (P – P0)
         double t = p.subtract(p0).dotProduct(v);
-        // O = P0 + tv
+        // O = P0 + t*v
         // if t is zero, the point is opposite the ray head, return the normalized vector from the point to the ray head
         if (!isZero(t))
         {

@@ -30,8 +30,7 @@ class SphereTest {
 
         Sphere s = new Sphere(new Point(0, 0, 0), 4);
         Vector v = s.getNormal(new Point(4, 0, 0));
-        assertEquals(new Vector(1,0,0),s.getNormal(new Point(4, 0, 0)),
-                "getNormal does not work correctly");
+        assertEquals(new Vector(1,0,0),v, "getNormal does not work correctly");
         assertEquals(1, v.length(),0.000001, "getNormal does not return a normal with length 1");
     }
 }

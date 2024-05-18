@@ -21,14 +21,22 @@ public class Cylinder extends Tube {
      */
     public Cylinder(double radius, Ray axis, double height) {
         super(radius, axis); // Calls the constructor of the superclass Tube
+        if (height <= 0) {
+            throw new IllegalArgumentException("Height must be greater than 0.");
+        }
         this.height = height;
     }
 
 
+    @Override
     public Vector getNormal(Point p) {
-        if ((p.distance(axis.getHead()) <= radius) || (p.distance(axis.getHead().add(axis.getDirection().scale(height))) < radius)) {
+
+        // Calculate the top and bottom points of the cylinder
+        Point p1=axis.getHead().add(axis.getDirection().scale(height));
+       // Check if the point is on the top or bottom base of the cylinder
+        if ((p.distance(axis.getHead()) < radius) || (p.distance(p1)) < radius)
             return axis.getDirection().normalize();
-        }
+
         Point p0 = axis.getHead();
         Vector v = axis.getDirection();
         //t = v (P – P0)
