@@ -25,6 +25,7 @@ class VectorTest {
     public void testConstructor() {
         // ============ Equivalence Partitions Tests ==============
         assertEquals(v1, new Vector(1, 2, 3), "Constructor does not work correctly");
+
         // =============== Boundary Values Tests ==================
         // Exception check for the zero vector
         assertThrows(IllegalArgumentException.class, () -> new Vector(0, 0, 0),
@@ -43,6 +44,7 @@ class VectorTest {
         assertEquals(v1Opposite, v1.add(v2), "ERROR: Vector + Vector does not work correctly");
 
         // =============== Boundary Values Tests ==================
+        // Exception check for the zero vector
         assertThrows(IllegalArgumentException.class, () -> v1.add(v1Opposite),
                 "ERROR: Vector + -itself does not throw an exception");
     }
@@ -54,7 +56,9 @@ class VectorTest {
     void testScale() {
         // ============ Equivalence Partitions Tests ==============
         assertEquals(v2, v1.scale(-2),"ERROR: scale() does not work correctly");
+
         // =============== Boundary Values Tests ==================
+        // Exception check for the zero vector
         assertThrows(IllegalArgumentException.class, () -> v1.scale(0),
                 "ERROR: scale() with zero does not throw an exception");
     }
@@ -66,7 +70,9 @@ class VectorTest {
     void testDotProduct() {
         // ============ Equivalence Partitions Tests ==============
         assertTrue(isZero(v1.dotProduct(v2) + 28), "ERROR: dotProduct() wrong value");
+
         // =============== Boundary Values Tests ==================
+        // Checking the correctness of the result for the Dot Product method when the vectors are perpendicular
         assertTrue(isZero(v1.dotProduct(v3)), "ERROR: dotProduct() for orthogonal vectors is not zero");
     }
 
@@ -81,6 +87,7 @@ class VectorTest {
                 "ERROR: crossProduct() wrong result length");
 
         // =============== Boundary Values Tests ==================
+        // Checking the correctness of the result for CrossProduct method when the vectors are parallel
         assertThrows(IllegalArgumentException.class, () -> v1.crossProduct(v2),
                 "ERROR: crossProduct() for parallel vectors does not throw an exception");
         assertTrue(isZero(vr.dotProduct(v1)) && isZero(vr.dotProduct(v3)),

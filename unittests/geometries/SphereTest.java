@@ -16,7 +16,6 @@ class SphereTest {
     public void testConstructor() {
 
         // =============== Boundary Values Tests ==================
-
         assertThrows(IllegalArgumentException.class,
                 () -> new Sphere(new Point(1, 2, 0), 0),
                 "ERROR: Failed constructing a correct sphere");
@@ -27,7 +26,6 @@ class SphereTest {
     @Test
     void testGetNormal() {
         // ============ Equivalence Partitions Tests ==============
-
         Sphere s = new Sphere(new Point(0, 0, 0), 4);
         Vector v = s.getNormal(new Point(4, 0, 0));
         assertEquals(new Vector(1,0,0),v, "getNormal does not work correctly");

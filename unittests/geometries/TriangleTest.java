@@ -17,10 +17,12 @@ class TriangleTest {
     public void testConstructor() {
 
         // =============== Boundary Values Tests ==================
-
+        //Throwing an error when 2 points merge:
         assertThrows(IllegalArgumentException.class,
                 () -> new Triangle(new Point(1, 2, 0), new Point(1, 2, 0), new Point(1, 1, 1)),
                 "ERROR: Failed constructing a correct triangle");
+
+        //Throwing an error when 3 points appear on one line:
         assertThrows(IllegalArgumentException.class,
                 () -> new Triangle(new Point(2, 4, 0), new Point(1, 2, 0), new Point(3, 6, 0)),
                 "ERROR: Failed constructing a correct triangle");

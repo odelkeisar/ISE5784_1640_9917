@@ -16,13 +16,13 @@ class CylinderTest {
     @Test
     public void testConstructor() {
         // ============ Equivalence Partitions Tests ==============
-
+        // Testing for not throwing an error in the construction of a normal cylinder
         assertDoesNotThrow(
                 ()->new Cylinder(3,new Ray(new Point(1,2,3),new Vector(1,1,1)),2),
                 "ERROR: Failed constructing a correct cylinder");
 
         // =============== Boundary Values Tests ==================
-
+        // Error injection test in incorrect cylinder build
         assertThrows(IllegalArgumentException.class,
                 () -> new Cylinder(3,new Ray(new Point(1,2,3),new Vector(1,1,1)),0),
                 "ERROR: Failed constructing a correct cylinder");
@@ -32,19 +32,19 @@ class CylinderTest {
     }
 
 
-    @Test
     /**
      * Test method for {@link geometries.Cylinder#getNormal(primitives.Point)}.
      */
-    void testGetNormal() {
+    @Test
+     void testGetNormal() {
 
         Cylinder c = new Cylinder(1.0, new Ray(new Point(1, 1, 1), new Vector(1, 0, 0)), 2.0);
 
         // ============ Equivalence Partitions Tests ==============
-        //Check on the side
+        // Check on the side
         Point p1 = new Point(2, 1, 0);
         assertEquals(new Vector(0, 0, -1), c.getNormal(p1), "ERROR: not the correct normal");
-        //Check on any basis:
+        // Check on any basis:
         Point p3 = new Point(1, 1, 1.5);
         assertEquals(new Vector(1, 0, 0), c.getNormal(p3), "ERROR: not the correct normal");
 
