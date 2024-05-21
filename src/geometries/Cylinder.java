@@ -29,15 +29,15 @@ public class Cylinder extends Tube {
 
 
     @Override
-    public Vector getNormal(Point p) {
+    public Vector getNormal(Point point) {
 
         // Calculate the top and bottom points of the cylinder
         Point p1 = axis.getHead().add(axis.getDirection().scale(height));
         // Check if the point is on the top or bottom base of the cylinder
-        if ((p.distance(axis.getHead()) < radius) || (p.distance(p1)) < radius)
+        if ((point.distance(axis.getHead()) < radius) || (point.distance(p1)) < radius)
             return axis.getDirection().normalize();
 
        //Calculation of the normal to the point on the side of the cylinder:
-        return super.getNormal(p);
+        return super.getNormal(point);
     }
 }

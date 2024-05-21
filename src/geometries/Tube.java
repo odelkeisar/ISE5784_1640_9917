@@ -2,6 +2,8 @@ package geometries;
 
 import primitives.*;
 
+import java.util.List;
+
 import static primitives.Util.isZero;
 
 /**
@@ -26,19 +28,24 @@ public class Tube extends RadialGeometry {
 
 
     @Override
-    public Vector getNormal(Point p) {
+    public Vector getNormal(Point point) {
         Point p0 = axis.getHead();
         Vector v = axis.getDirection();
         //t = v (P – P0)
-        double t = p.subtract(p0).dotProduct(v);
+        double t = point.subtract(p0).dotProduct(v);
         // O = P0 + t*v
         // if t is zero, the point is opposite the ray head, return the normalized vector from the point to the ray head
         if (!isZero(t))
         {
             Point o = p0.add(v.scale(t));
-            return p.subtract(o).normalize();
+            return point.subtract(o).normalize();
         }
         else
-            return p.subtract(p0).normalize();
+            return point.subtract(p0).normalize();
+    }
+
+    @Override
+    public List<Point> findIntersections(Ray ray) {
+        return null;
     }
 }

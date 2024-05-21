@@ -41,4 +41,12 @@ class TubeTest {
         Point p2 = new Point(1, 2, 1);
         assertEquals(new Vector(0, 1, 0), t.getNormal(p2), "ERROR: not the correct normal");
     }
+
+
+    /**
+     * Test method for {@link geometries.Tube#findIntersections(Ray)} indIntersections(primitives.Point)}.
+     */
+    @Test
+    void testFindIntersections() {
+    }
 }

@@ -31,25 +31,36 @@ public class Point {
     public Point(double x, double y, double z) {
         this.xyz = new Double3(x, y, z);
     }
+    public double getX() {
+        return xyz.d1;
+    }
+
+    public double getY() {
+        return xyz.d2;
+    }
+
+    public double getZ() {
+        return xyz.d3;
+    }
 
     /**
      * Subtracts another point from this point, returning the resulting vector.
      *
-     * @param p1 The point to subtract.
+     * @param point The point to subtract.
      * @return The vector representing the subtraction result.
      */
-    public Vector subtract(Point p1) {
-        return new Vector(this.xyz.subtract(p1.xyz));
+    public Vector subtract(Point point) {
+        return new Vector(this.xyz.subtract(point.xyz));
     }
 
     /**
      * Adds a vector to this point, returning the resulting point.
      *
-     * @param v1 The vector to add.
+     * @param vector The vector to add.
      * @return The resulting point after addition.
      */
-    public Point add(Vector v1) {
-        return new Point(xyz.add(v1.xyz));
+    public Point add(Vector vector) {
+        return new Point(xyz.add(vector.xyz));
     }
 
     /**

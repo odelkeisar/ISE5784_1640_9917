@@ -3,6 +3,8 @@ package geometries;
 import org.junit.jupiter.api.Test;
 import primitives.*;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -37,5 +39,47 @@ class TriangleTest {
         // ============ Equivalence Partitions Tests ==============
         Triangle t = new Triangle(new Point(0, 0, 0), new Point(1, 0, 0), new Point(0, 1, 0));
         assertEquals(new Vector(0, 0, 1), t.getNormal(new Point(0, 0, 0)), "ERROR: GetNormal ERROR");
+    }
+
+
+    /**
+     * Test method for {@link geometries.Triangle#findIntersections(Ray)}}.
+     */
+    @Test
+    void testFindIntersections() {
+        Triangle tr = new Triangle(new Point(0, 0, 1), new Point(1, 0, 0), new Point(0, 1, 0));
+        Plane pl = new Plane(new Point(0, 0, 1), new Point(1, 0, 0), new Point(0, 1, 0));
+        Ray ray;
+        // ============ Equivalence Partitions Tests ==============
+        // TC01: Inside triangle(1 point)
+        ray = new Ray(new Point(1, 1, 1), new Vector(-1, -1, -1));
+        assertEquals(List.of(new Point(1d / 3, 1d / 3, 1d / 3)), tr.findIntersections(ray),
+                "Bad intersection");
+
+        // TC02: Against edge(0 points)
+        ray = new Ray(new Point(0, 0, -1), new Vector(1, 1, 0));
+        assertEquals(List.of(new Point(1, 1, -1)), pl.findIntersections(ray),
+                "Wrong intersection with plane");
+        assertNull(tr.findIntersections(ray), "Bad intersection");
+
+        // TC03: Against vertex(0 points)
+        ray = new Ray(new Point(0, 0, 2), new Vector(-1, -1, 0));
+        assertEquals(List.of(new Point(-0.5, -0.5, 2)), pl.findIntersections(ray),
+                "Wrong intersection with plane");
+        assertNull(tr.findIntersections(ray), "Bad intersection");
+
+
+        // =============== Boundary Values Tests ==================
+        // TC04: Point on edge (0 points)
+        assertNull(tr.findIntersections(new Ray(new Point(0, -6, 0.5), new Vector(-0.5, 10, -0.5))),
+                "Point on edge");
+
+        // TC05: Point in vertex (0 points)
+        assertNull(tr.findIntersections(new Ray(new Point(0, -6, 1), new Vector(0, 10, 0)))
+                ,"Point in vertex");
+
+        // TC06: Point on edge's continuation (0 points)
+        assertNull(tr.findIntersections(new Ray(new Point(0, -6, -4), new Vector(0, 10, 5)))
+                ,"Point on edge's continuation");
     }
 }

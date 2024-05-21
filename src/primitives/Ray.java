@@ -26,7 +26,7 @@ public class Ray {
      * @return the head
      */
     public Point getHead() {
-        return this.head;
+        return head;
     }
 
     /**
@@ -35,7 +35,7 @@ public class Ray {
      * @return direction
      */
     public Vector getDirection() {
-        return this.direction;
+        return direction;
     }
 
     @Override
