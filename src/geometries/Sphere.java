@@ -76,16 +76,16 @@ public class Sphere extends RadialGeometry {
 
         // Find the intersection points if t values are positive
         if (t1 > 0 && t2 > 0) {
-            Point p1=head.add(direction.scale(t1)); //p1=head+t1*v
-            Point p2=head.add(direction.scale(t2)); //p2=head+t2*v
+            Point p1=ray.getPoint(t1); //p1=head+t1*v
+            Point p2=ray.getPoint(t2); //p2=head+t2*v
             return List.of(p1, p2);
         }
         if (t1 > 0 ) {
-            Point p1=head.add(direction.scale(t1)); //p1=head+t1*v
+            Point p1=ray.getPoint(t1); //p1=head+t1*v
             return List.of(p1);
         }
         if (t2 >0 ) {
-            Point p2=head.add(direction.scale(t2)); //p2=head+t2*v
+            Point p2=ray.getPoint(t2); //p2=head+t2*v
             return List.of(p2);
         }
         return null;

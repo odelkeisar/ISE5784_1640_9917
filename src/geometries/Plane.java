@@ -95,7 +95,7 @@ public class Plane implements Geometry {
         }
 
         // Calculate the intersection point (p = p0 + t * v)
-        return List.of(p0.add(v.scale(t)));
+        return List.of(ray.getPoint(t));
     }
 
 }

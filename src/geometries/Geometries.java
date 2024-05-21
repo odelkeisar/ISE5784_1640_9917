@@ -34,8 +34,27 @@ public class Geometries implements Intersectable{
         Collections.addAll(this.geometries,geometries);
     }
 
+    /**
+     * Finds all the intersection points between the given ray and all geometries in the collection.
+     *
+     * @param ray the ray to check for intersections with the geometries.
+     * @return a list containing all the intersection points between the ray and the geometries.
+     *         If there are no intersections, returns null.
+     */
     @Override
     public List<Point> findIntersections(Ray ray) {
-        return null;
+        List<Point> intersectionsResult = null;
+        for (Intersectable geometry : geometries)
+        {
+            var intersections = geometry.findIntersections(ray);
+            if (intersections != null)
+            {
+                if (intersectionsResult == null)
+                    intersectionsResult = new LinkedList<>();
+                intersectionsResult.addAll(intersections);
+            }
+        }
+        return intersectionsResult;
     }
+
 }
