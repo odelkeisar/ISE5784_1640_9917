@@ -13,7 +13,7 @@ class RayTest {
     void testGetPoint() {
         Ray ray=new Ray(new Point(1,0,0),new Vector(1,0,0));
         // ============ Equivalence Partitions Tests ==============
-        //positive stunner:
+        //positive scalar:
         assertEquals(new Point(3,0,0), ray.getPoint(2), "Incorrect calculation of a point on a horn");
 
         //negative distance

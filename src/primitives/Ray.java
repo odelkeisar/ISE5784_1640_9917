@@ -48,7 +48,7 @@ public class Ray {
     public Point getPoint(double t){
         if (isZero(t))
             return head;
-        return head.add(direction.normalize().scale(t));
+        return head.add(direction.scale(t));
     }
 
     @Override

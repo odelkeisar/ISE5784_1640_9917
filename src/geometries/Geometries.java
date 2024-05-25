@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class Geometries implements Intersectable{
 
-    protected List<Intersectable> geometries=new LinkedList<>();
+    protected List<Intersectable> geometriesList =new LinkedList<>();
 
     /**
      * default constructor
@@ -31,7 +31,7 @@ public class Geometries implements Intersectable{
      * @param geometries The intersectable geometries to add.
      */
     public void add(Intersectable... geometries){
-        Collections.addAll(this.geometries,geometries);
+        Collections.addAll(geometriesList,geometries);
     }
 
     /**
@@ -44,7 +44,7 @@ public class Geometries implements Intersectable{
     @Override
     public List<Point> findIntersections(Ray ray) {
         List<Point> intersectionsResult = null;
-        for (Intersectable geometry : geometries)
+        for (Intersectable geometry : geometriesList)
         {
             var intersections = geometry.findIntersections(ray);
             if (intersections != null)
@@ -56,5 +56,4 @@ public class Geometries implements Intersectable{
         }
         return intersectionsResult;
     }
-
 }

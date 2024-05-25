@@ -4,6 +4,7 @@ import primitives.Point;
 import primitives.Ray;
 import primitives.Vector;
 
+import java.util.Comparator;
 import java.util.List;
 
 import static primitives.Util.alignZero;
@@ -55,7 +56,7 @@ public class Sphere extends RadialGeometry {
         // If the ray starts from the center of the sphere
         if (head.equals(center)) {
             //center+(radius*direction)
-            return List.of(center.add(direction.scale(radius)));
+            return List.of(ray.getPoint(radius));
         }
 
         Vector U = center.subtract(head);
@@ -67,7 +68,7 @@ public class Sphere extends RadialGeometry {
         //Th=squrt(r^2-d^2)
         double Th=alignZero(Math.sqrt((radius*radius)-(d*d)));
 
-        //
+        //the ray out of sphere
         if(radius<=d)
            return null;
 
@@ -78,7 +79,9 @@ public class Sphere extends RadialGeometry {
         if (t1 > 0 && t2 > 0) {
             Point p1=ray.getPoint(t1); //p1=head+t1*v
             Point p2=ray.getPoint(t2); //p2=head+t2*v
-            return List.of(p1, p2);
+            return (List<Point>) List.of(p1, p2).stream()
+                    .sorted(Comparator.comparingDouble(p -> p.distance(head)))
+                    .toList();
         }
         if (t1 > 0 ) {
             Point p1=ray.getPoint(t1); //p1=head+t1*v
