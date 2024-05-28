@@ -178,6 +178,10 @@ public class Camera implements Cloneable {
                 throw new IllegalArgumentException("width and height should be greater than zero");
             return this;
         }
+        @Override
+        protected Camera clone() throws CloneNotSupportedException {
+            return (Camera) super.clone();
+        }
 
         /**
          * Builds and returns the Camera instance.
