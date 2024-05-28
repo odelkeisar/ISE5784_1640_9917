@@ -4,6 +4,8 @@ import primitives.*;
 
 import java.util.MissingResourceException;
 
+import static primitives.Util.isZero;
+
 /**
  * The Camera class represents a camera in a 3D scene. It is used to construct rays through a view plane.
  */
@@ -104,7 +106,17 @@ public class Camera implements Cloneable {
      * @return the constructed ray.
      */
     public Ray constructRay(int nX, int nY, int j, int i) {
-        return null;
+        Point pc = p0.add(vTo.scale(distance));  // The center of the view plane
+        double rX = width / nX;  // The width of a single pixel
+        double rY = height / nY;  // The height of a single pixel
+        double xJ = (j - (nX - 1) / 2d) * rX;  // The offset on the x-axis
+        double yI = -(i - (nY - 1) / 2d) * rY;  // The offset on the y-axis
+        Point pIJ = pc;
+        if (!isZero(xJ))
+            pIJ = pIJ.add(vRight.scale(xJ));  // Adjust the point for the x offset
+        if (!isZero(yI))
+            pIJ = pIJ.add(vUp.scale(yI));  // Adjust the point for the y offset
+        return new Ray(p0, pIJ.subtract(p0));  // Construct the ray from the camera to the point
     }
 
     /**
