@@ -38,6 +38,8 @@ class CameraTest {
         // ============ Equivalence Partitions Tests ==============
         // EP01: 4X4 Inside (1,1)
         Camera camera1 = cameraBuilder.setVpSize(8, 8).build();
+        Ray D=new Ray(Point.ZERO, new Vector(1, -1, -10));
+        Ray s= camera1.constructRay(4, 4, 1, 1);
         assertEquals(new Ray(Point.ZERO, new Vector(1, -1, -10)),
                 camera1.constructRay(4, 4, 1, 1), badRay);
 

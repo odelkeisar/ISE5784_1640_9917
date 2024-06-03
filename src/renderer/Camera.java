@@ -157,7 +157,7 @@ public class Camera implements Cloneable {
          * @return the builder instance.
          */
         public Builder setDirection(Vector vTo, Vector vUp) {
-            if (vTo.dotProduct(vUp) != 0)
+            if (!isZero(vTo.dotProduct(vUp)))
                 throw new IllegalArgumentException("The vectors should be perpendicular to each other");
             camera.vTo = vTo.normalize();
             camera.vUp = vUp.normalize();
@@ -177,10 +177,6 @@ public class Camera implements Cloneable {
             if (width <= 0 || height <= 0)
                 throw new IllegalArgumentException("width and height should be greater than zero");
             return this;
-        }
-        @Override
-        protected Camera clone() throws CloneNotSupportedException {
-            return (Camera) super.clone();
         }
 
         /**
@@ -204,7 +200,7 @@ public class Camera implements Cloneable {
             if (camera.p0 == null)
                 throw new MissingResourceException("Missing rendering data", Camera.class.getName(), "p0");
 
-            camera.vRight = camera.vTo.crossProduct(camera.vUp);
+            camera.vRight = camera.vTo.crossProduct(camera.vUp).normalize();
 
             return (Camera) camera.clone();
         }
