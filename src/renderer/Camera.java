@@ -17,6 +17,8 @@ public class Camera implements Cloneable {
     private double height = 0;
     private double width = 0;
     private double distance = 0;
+    private ImageWriter imageWriter;
+    private RayTracerBase rayTracer;
 
     /**
      * Gets the camera location.
@@ -120,6 +122,58 @@ public class Camera implements Cloneable {
     }
 
     /**
+     * Renders the image by casting rays through each pixel and writing the resulting color to the image.
+     * The method iterates through all the pixels in the image and calls the castRay method for each pixel.
+     */
+    public Camera renderImage() {
+        int nX = imageWriter.getNx();
+        int nY = imageWriter.getNy();
+
+        for (int i = 0; i < nY; i++)
+            for (int j = 0; j < nX; j++)
+                castRay(nX, nY, j, i);
+        return this;
+    }
+    /**
+     * Casts a ray through a certain pixel, follows the ray and writes the resulting color to the image using writePixel of the image maker.
+     *
+     * @param nX the number of pixels along the x-axis
+     * @param nY the number of pixels along the y-axis
+     * @param j the column index of the pixel
+     * @param i the row index of the pixel
+     */
+    private void castRay(int nX, int nY, int j, int i){
+        imageWriter.writePixel(j,i,rayTracer.traceRay(constructRay(nX, nY, j,i)));
+    }
+
+    /**
+     * Draws a grid on the image with the specified interval and color.
+     *
+     * @param interval the interval between grid lines, in pixels
+     * @param color    the Color of the grid lines
+     */
+    public Camera printGrid(int interval, Color color) {
+
+        for (int i = 0; i < imageWriter.getNy(); i++)
+            for (int j = 0; j < imageWriter.getNx(); j++)
+                if (j % interval == 0 || i % interval == 0)
+                    imageWriter.writePixel(j,i, color);
+        return this;
+    }
+
+    /**
+     * Writes the image to a file using the ImageWriter.
+     * If the ImageWriter is not set, throws a MissingResourceException.
+     *
+     * @throws MissingResourceException if the ImageWriter is not set
+     */
+    public void writeToImage(){
+        if (imageWriter == null)
+            throw new MissingResourceException("ImageWriter is not set", ImageWriter.class.getName(), "imageWriter");
+        imageWriter.writeToImage();
+    }
+
+    /**
      * Builder class for constructing a Camera instance.
      */
     public static class Builder {
@@ -180,37 +234,56 @@ public class Camera implements Cloneable {
         }
 
         /**
+         * Sets the ImageWriter for the camera.
+         *
+         * @param imageWriter the ImageWriter to be set for the camera
+         * @return the current Builder instance for method chaining.
+         */
+        public Builder setImageWriter(ImageWriter imageWriter) {
+            camera.imageWriter = imageWriter;
+            return this;
+        }
+
+        /**
+         * Sets the RayTracer for the camera.
+         *
+         * @param rayTracer the RayTracerBase to be set for the camera
+         * @return the current Builder instance for method chaining
+         */
+        public Builder setRayTracer(RayTracerBase rayTracer) {
+            camera.rayTracer = rayTracer;
+            return this;
+        }
+
+        /**
          * Builds and returns the Camera instance.
          *
          * @return the built Camera instance.
          * @throws CloneNotSupportedException if the camera cannot be cloned.
          * @throws MissingResourceException   if any required field is missing.
          */
+        String errorMessage = "Missing rendering data";
+
         public Camera build() throws CloneNotSupportedException {
             if (camera.vTo == null)
-                throw new MissingResourceException("Missing rendering data", Camera.class.getName(), "vTo");
+                throw new MissingResourceException(errorMessage, Camera.class.getName(), "vTo");
             if (camera.vUp == null)
-                throw new MissingResourceException("Missing rendering data", Camera.class.getName(), "vUp");
+                throw new MissingResourceException(errorMessage, Camera.class.getName(), "vUp");
             if (camera.width == 0)
-                throw new MissingResourceException("Missing rendering data", Camera.class.getName(), "width");
+                throw new MissingResourceException(errorMessage, Camera.class.getName(), "width");
             if (camera.height == 0)
-                throw new MissingResourceException("Missing rendering data", Camera.class.getName(), "height");
+                throw new MissingResourceException(errorMessage, Camera.class.getName(), "height");
             if (camera.distance == 0)
-                throw new MissingResourceException("Missing rendering data", Camera.class.getName(), "distance");
+                throw new MissingResourceException(errorMessage, Camera.class.getName(), "distance");
             if (camera.p0 == null)
-                throw new MissingResourceException("Missing rendering data", Camera.class.getName(), "p0");
-
+                throw new MissingResourceException(errorMessage, Camera.class.getName(), "p0");
+            if (camera.imageWriter == null)
+                throw new MissingResourceException(errorMessage, Camera.class.getName(), "imageWriter");
+            if (camera.rayTracer == null)
+                throw new MissingResourceException(errorMessage, Camera.class.getName(), "rayTracer");
             camera.vRight = camera.vTo.crossProduct(camera.vUp).normalize();
 
             return (Camera) camera.clone();
-        }
-
-        public Builder setRayTracer(SimpleRayTracer test) {
-            return this;
-        }
-
-        public Builder setImageWriter(ImageWriter imageWriter) {
-            return this;
         }
     }
 }

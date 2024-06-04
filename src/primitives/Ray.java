@@ -1,5 +1,7 @@
 package primitives;
 
+import java.util.List;
+
 import static primitives.Util.isZero;
 
 /**
@@ -22,6 +24,7 @@ public class Ray {
         this.head = head;
         this.direction = direction.normalize();
     }
+
     /**
      * returns the head point of the ray
      *
@@ -41,14 +44,34 @@ public class Ray {
     }
 
     /**
-     *
      * @param t is a scalar
      * @return A point on the beam at a given distance : p0+t*v
      */
-    public Point getPoint(double t){
+    public Point getPoint(double t) {
         if (isZero(t))
             return head;
         return head.add(direction.scale(t));
+    }
+    /**
+     ** Finds the closest point to the ray head point from a list of points.
+     * @param pointList the list of {@link Point} objects to search through
+     * @return the closest {@link Point} from the list to the reference point;
+     *         returns null if the list is null or empty
+     */
+    public Point findClosestPoint(List<Point> pointList) {
+        if (pointList == null||pointList.isEmpty())
+            return null;
+        double distance = Double.MAX_VALUE;
+        Point closestPoint = null;
+
+        for (Point point : pointList) {
+            double d = head.distance(point);
+            if (d < distance) {
+                distance = d;
+                closestPoint = point;
+            }
+        }
+        return closestPoint;
     }
 
     @Override
