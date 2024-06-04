@@ -204,5 +204,13 @@ public class Camera implements Cloneable {
 
             return (Camera) camera.clone();
         }
+
+        public Builder setRayTracer(SimpleRayTracer test) {
+            return this;
+        }
+
+        public Builder setImageWriter(ImageWriter imageWriter) {
+            return this;
+        }
     }
 }

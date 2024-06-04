@@ -12,6 +12,7 @@ import static primitives.Util.isZero;
  */
 class VectorTest {
 
+    public static final double DELTA = 0.00001;
     Vector v1 = new Vector(1, 2, 3);
     Vector v1Opposite = new Vector(-1, -2, -3);
     Vector v2 = new Vector(-2, -4, -6);
@@ -69,11 +70,11 @@ class VectorTest {
     @Test
     void testDotProduct() {
         // ============ Equivalence Partitions Tests ==============
-        assertTrue(isZero(v1.dotProduct(v2) + 28), "ERROR: dotProduct() wrong value");
+        assertEquals(-28,v1.dotProduct(v2) , "ERROR: dotProduct() wrong value");
 
         // =============== Boundary Values Tests ==================
         // Checking the correctness of the result for the Dot Product method when the vectors are perpendicular
-        assertTrue(isZero(v1.dotProduct(v3)), "ERROR: dotProduct() for orthogonal vectors is not zero");
+        assertEquals(0d,v1.dotProduct(v3), "ERROR: dotProduct() for orthogonal vectors is not zero");
     }
 
     /**
@@ -83,7 +84,10 @@ class VectorTest {
     void testCrossProduct() {
         // ============ Equivalence Partitions Tests ==============
         Vector vr = v1.crossProduct(v3);
-        assertTrue(isZero(vr.length() - v1.length() * v3.length()),
+        assertEquals(
+                v1.length() * v3.length(),
+                vr.length(),
+                DELTA,
                 "ERROR: crossProduct() wrong result length");
 
         // =============== Boundary Values Tests ==================
@@ -100,8 +104,8 @@ class VectorTest {
     @Test
     void testLengthSquared() {
         // ============ Equivalence Partitions Tests ==============
-        assertTrue(isZero(v1.lengthSquared() - 14), "ERROR: lengthSquared() wrong value");
-        assertTrue(isZero(v4.lengthSquared() - 9), "ERROR: lengthSquared() wrong value");
+        assertEquals(14,v1.lengthSquared(), "ERROR: lengthSquared() wrong value");
+        assertEquals(9, v4.lengthSquared(), "ERROR: lengthSquared() wrong value");
     }
 
     /**
@@ -110,8 +114,8 @@ class VectorTest {
     @Test
     void testLength() {
         // ============ Equivalence Partitions Tests ==============
-        assertTrue(isZero(v1.length() - Math.sqrt(14)), "ERROR: length() wrong value");
-        assertTrue(isZero(v4.length() - 3), "ERROR: length() wrong value");
+        assertEquals( Math.sqrt(14),v1.length() , "ERROR: length() wrong value");
+        assertEquals(3,v4.length() , "ERROR: length() wrong value");
     }
 
     /**
@@ -119,12 +123,12 @@ class VectorTest {
      */
     @Test
     void testNormalize() {
-        Vector v = new Vector(0, 3, 4);
-        Vector n = v.normalize();
+        Vector vector = new Vector(0, 3, 4);
+        Vector normalized = vector.normalize();
         // ============ Equivalence Partitions Tests ==============
-        assertEquals(1d, n.lengthSquared(), 0.00001, "wrong normalized vector length");
-        assertThrows(IllegalArgumentException.class, () -> v.crossProduct(n),//
+        assertEquals(1d, normalized.lengthSquared(), DELTA, "wrong normalized vector length");
+        assertThrows(IllegalArgumentException.class, () -> vector.crossProduct(normalized),//
                 "normalized vector is not in the same direction");
-        assertEquals(new Vector(0, 0.6, 0.8), n, "wrong normalized vector");
+        assertEquals(new Vector(0, 0.6, 0.8), normalized, "wrong normalized vector");
     }
 }

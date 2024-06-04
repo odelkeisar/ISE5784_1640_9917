@@ -58,12 +58,15 @@ class PointTest {
     void testDistanceSquared() {
         // =============== Boundary Values Tests ==================
         // TC04:Checking the correctness of the result for DistanceSquared method when the result is 0.
-        assertTrue(isZero(p1.distanceSquared(p1)),"ERROR: point squared distance to itself is not zero");
+        assertEquals(0d,p1.distanceSquared(p1),"ERROR: point squared distance to itself is not zero");
 
         // ============ Equivalence Partitions Tests ==============
         // TC05:Checking the correctness of the result for DistanceSquared method
-        assertTrue(isZero(p1.distanceSquared(p3) - 9),"ERROR: squared distance between points is wrong");
-        assertTrue(isZero(p3.distanceSquared(p1) - 9),"ERROR: squared distance between points is wrong");
+        assertEquals(9,
+                p1.distanceSquared(p3),
+                0.00001,
+                "ERROR: squared distance between points is wrong");
+        assertEquals(9,p3.distanceSquared(p1),"ERROR: squared distance between points is wrong");
 
     }
 
@@ -74,12 +77,12 @@ class PointTest {
     void testDistance() {
         // =============== Boundary Values Tests ==================
         // TC06:Checking the correctness of the result for Distance method when the result is 0.
-        assertTrue(isZero(p1.distance(p1)),"ERROR: point distance to itself is not zero");
+        assertEquals(0d,p1.distance(p1),"ERROR: point distance to itself is not zero");
 
         // ============ Equivalence Partitions Tests ==============
         // TC07:Checking the correctness of the result for Distance method
-        assertTrue(isZero(p1.distance(p3) - 3),"ERROR: distance between points is wrong");
-        assertTrue(isZero(p3.distance(p1) - 3),"ERROR: distance between points is wrong");
+        assertEquals(3,p1.distance(p3) ,"ERROR: distance between points is wrong");
+        assertEquals(3,p3.distance(p1) ,"ERROR: distance between points is wrong");
 
     }
 }

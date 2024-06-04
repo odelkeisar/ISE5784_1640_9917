@@ -57,7 +57,7 @@ class PlaneTest {
 
         // ============ Equivalence Partitions Tests ==============
         Vector expectedNormal1 = new Vector(0, -2, -2).normalize();
-        Vector expectedNormal2 = new Vector(0, 2, 2).normalize();
+        Vector expectedNormal2 = expectedNormal1.scale(-1);
         Vector actualNormal = plane.getNormal(new Point(1,2,0));
 
         assertTrue(expectedNormal1.equals(actualNormal) || expectedNormal2.equals(actualNormal),
