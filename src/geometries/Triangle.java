@@ -29,10 +29,10 @@ public class Triangle extends Polygon {
      *         If the ray intersects the plane of the triangle but not the triangle itself, returns null.
      */
     @Override
-    public List<Point> findIntersections(Ray ray) {
+    protected List<GeoPoint> findGeoIntersectionsHelper(Ray ray) {
 
         // Find intersection points with the plane of the triangle
-        List<Point> result = plane.findIntersections(ray);
+        List<GeoPoint> result = plane.findGeoIntersections(ray);
         if (result == null) {
             return null;
         }
@@ -57,7 +57,7 @@ public class Triangle extends Polygon {
 
         // Check if all signs are positive or all are negative
         if (s1 > 0 && s2 > 0 && s3 > 0 || s1 < 0 && s2 < 0 && s3 < 0)
-            return result;
+            return result.stream().map(gp->new GeoPoint(this,gp.point)).toList();
 
         return null;
     }

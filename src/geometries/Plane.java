@@ -12,7 +12,7 @@ import static primitives.Util.isZero;
 /**
  * Represents a plane in 3D space defined by a point and a normal vector.
  */
-public class Plane implements Geometry {
+public class Plane extends Geometry {
 
 
     private final Point p;
@@ -66,7 +66,7 @@ public class Plane implements Geometry {
      * @return a list containing the intersection point between the ray and the plane.
      */
     @Override
-    public List<Point> findIntersections(Ray ray) {
+    protected List<GeoPoint> findGeoIntersectionsHelper(Ray ray) {
 
         Point p0 = ray.getHead();
         Vector v = ray.getDirection();
@@ -95,7 +95,7 @@ public class Plane implements Geometry {
         }
 
         // Calculate the intersection point (p = p0 + t * v)
-        return List.of(ray.getPoint(t));
+        return List.of(new GeoPoint(this,ray.getPoint(t)));
     }
 
 }

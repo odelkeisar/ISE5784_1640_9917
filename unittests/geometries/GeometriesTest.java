@@ -22,9 +22,15 @@ class GeometriesTest {
 
         // checks for no intersections
         Sphere sphere = new Sphere(new Point(1,0,0), 4.0);
-        Triangle triangle =
-                new Triangle(new Point(-1, 0, 0), new Point(1, 0, 0), new Point(0, 1, 0));
-        Plane plane = new Plane(new Point(1, 0, 0), new Vector(0, 0, 1));
+        Triangle triangle = new Triangle(
+                new Point(-1, 0, 0),
+                new Point(1, 0, 0),
+                new Point(0, 1, 0)
+        );
+        Plane plane = new Plane(
+                new Point(1, 0, 0),
+                new Vector(0, 0, 1)
+        );
         geometries.add(sphere,triangle ,plane);
         assertNull(geometries.findIntersections(new Ray(new Point(-4, 6, 2),new Vector(1, 0, 0))));
 

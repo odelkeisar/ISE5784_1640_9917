@@ -7,9 +7,9 @@ import java.util.List;
 /**
  * Represents a collection of intersectable geometries.
  */
-public class Geometries implements Intersectable{
+public class Geometries extends Intersectable{
 
-    protected List<Intersectable> geometriesList =new LinkedList<>();
+    protected List<Intersectable> geometries =new LinkedList<>();
 
     /**
      * default constructor
@@ -26,12 +26,12 @@ public class Geometries implements Intersectable{
     }
 
     /**
-     * Adds intersectable geometries to the collection.
+     * Adds the given geometries to the collection.
      *
-     * @param geometries The intersectable geometries to add.
+     * @param geometries The geometries to add.
      */
     public void add(Intersectable... geometries){
-        Collections.addAll(geometriesList,geometries);
+        Collections.addAll(this.geometries,geometries);
     }
 
     /**
@@ -42,11 +42,11 @@ public class Geometries implements Intersectable{
      *         If there are no intersections, returns null.
      */
     @Override
-    public List<Point> findIntersections(Ray ray) {
-        List<Point> intersectionsResult = null;
-        for (Intersectable geometry : geometriesList)
+    protected List<GeoPoint> findGeoIntersectionsHelper(Ray ray) {
+        List<GeoPoint> intersectionsResult = null;
+        for (Intersectable geometry : geometries)
         {
-            var intersections = geometry.findIntersections(ray);
+            var intersections = geometry.findGeoIntersections(ray);
             if (intersections != null)
             {
                 if (intersectionsResult == null)

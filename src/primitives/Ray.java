@@ -4,6 +4,8 @@ import java.util.List;
 
 import static primitives.Util.isZero;
 
+import geometries.Intersectable.GeoPoint;
+
 /**
  * Represents a ray in 3D space, defined by a head point and a direction vector.
  */
@@ -52,28 +54,44 @@ public class Ray {
             return head;
         return head.add(direction.scale(t));
     }
+
     /**
-     ** Finds the closest point to the ray head point from a list of points.
-     * @param pointList the list of {@link Point} objects to search through
-     * @return the closest {@link Point} from the list to the reference point;
-     *         returns null if the list is null or empty
+     * Finds the closest point to the ray's head point from a list of points.
+     *
+     * @param points The list of {@link Point} objects to search through.
+     * @return The closest {@link Point} from the list to the ray's head point;
+     * returns null if the list is null or empty.
      */
-    public Point findClosestPoint(List<Point> pointList) {
-        if (pointList == null||pointList.isEmpty())
+    public Point findClosestPoint(List<Point> points) {
+        return
+                points == null || points.isEmpty() ? null
+                        : findClosestGeoPoint(points.stream().map(p -> new GeoPoint(null, p)).toList()).point;
+    }
+
+    /**
+     * Finds the closest GeoPoint to the ray's head point from a list of GeoPoints.
+     *
+     * @param geoPoints The list of {@link GeoPoint} objects to search through.
+     * @return The closest {@link GeoPoint} from the list to the ray's head point;
+     * returns null if the list is null or empty.
+     */
+    public GeoPoint findClosestGeoPoint(List<GeoPoint> geoPoints) {
+        if (geoPoints == null || geoPoints.isEmpty())
             return null;
         double distanceMin = Double.MAX_VALUE;
-        Point closestPoint
+        GeoPoint closestGeoPoint
                 = null;
 
-        for (Point point : pointList) {
-            double distance = head.distance(point);
+        for (GeoPoint geoPoint : geoPoints) {
+            double distance = head.distance(geoPoint.point);
             if (distance < distanceMin) {
                 distanceMin = distance;
-                closestPoint = point;
+                closestGeoPoint = geoPoint;
             }
         }
-        return closestPoint;
+        return closestGeoPoint;
     }
+
 
     @Override
     public boolean equals(Object obj) {
