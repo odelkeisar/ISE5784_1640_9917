@@ -1,13 +1,24 @@
 package renderer;
+
 import primitives.Color;
 import primitives.Point;
 import primitives.Ray;
+import scene.Scene;
 
 import java.util.List;
 
+/**
+ * SimpleRayTracer is a basic implementation of RayTracerBase that traces rays
+ * through a scene and calculates the color based on intersections with objects in the scene.
+ */
 public class SimpleRayTracer extends RayTracerBase {
 
-    public SimpleRayTracer(scene.Scene scene) {
+    /**
+     * Constructs a SimpleRayTracer with the specified scene.
+     *
+     * @param scene
+     */
+    public SimpleRayTracer(Scene scene) {
         super(scene);
     }
 
@@ -19,6 +30,7 @@ public class SimpleRayTracer extends RayTracerBase {
             return scene.background;
         return calcColor(ray.findClosestPoint(points));
     }
+
     /**
      * Calculates the color at a given point.
      *

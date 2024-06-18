@@ -21,6 +21,11 @@ public class Camera implements Cloneable {
     private RayTracerBase rayTracer;
 
     /**
+     * Private constructor to enforce usage of the builder.
+     */
+    private Camera() {
+    }
+    /**
      * Gets the camera location.
      *
      * @return the camera location.
@@ -83,11 +88,6 @@ public class Camera implements Cloneable {
         return distance;
     }
 
-    /**
-     * Private constructor to enforce usage of the builder.
-     */
-    private Camera() {
-    }
 
     /**
      * Returns a new builder for the Camera.
@@ -168,8 +168,6 @@ public class Camera implements Cloneable {
      * @throws MissingResourceException if the ImageWriter is not set
      */
     public void writeToImage(){
-        if (imageWriter == null)
-            throw new MissingResourceException("ImageWriter is not set", ImageWriter.class.getName(), "imageWriter");
         imageWriter.writeToImage();
     }
 
@@ -177,6 +175,7 @@ public class Camera implements Cloneable {
      * Builder class for constructing a Camera instance.
      */
     public static class Builder {
+
         private final Camera camera = new Camera();
 
         /**
@@ -262,9 +261,10 @@ public class Camera implements Cloneable {
          * @throws CloneNotSupportedException if the camera cannot be cloned.
          * @throws MissingResourceException   if any required field is missing.
          */
-        String errorMessage = "Missing rendering data";
+
 
         public Camera build() throws CloneNotSupportedException {
+            String errorMessage = "Missing rendering data";
             if (camera.vTo == null)
                 throw new MissingResourceException(errorMessage, Camera.class.getName(), "vTo");
             if (camera.vUp == null)

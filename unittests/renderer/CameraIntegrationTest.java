@@ -4,6 +4,8 @@ import geometries.*;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import primitives.*;
+import scene.Scene;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -17,7 +19,9 @@ class CameraIntegrationTest {
     int nX = 3, nY = 3;
     Camera camera = Camera.getBuilder().setLocation(new Point(0, 0, 0.5))
             .setDirection(new Vector(0, 0, -1), new Vector(0, -1, 0)).setVpDistance(1)
-            .setVpSize(3, 3).build();
+            .setVpSize(3, 3)
+            .setRayTracer(new SimpleRayTracer( new Scene("Test scene")))
+            .setImageWriter(new ImageWriter("base render test", 1000, 1000)).build();
 
     CameraIntegrationTest() throws CloneNotSupportedException {
     }

@@ -43,7 +43,7 @@ class RayTest {
                 "The closest point is not found correctly");
         // =============== Boundary Values Tests ==================
         // TC10: The list is null
-        assertNull(ray.findClosestPoint(null),
+        assertEquals(null,ray.findClosestPoint(List.of()),
                 "The function should return null when the list is null");
 
         // TC11: The closest point is the first point in the list

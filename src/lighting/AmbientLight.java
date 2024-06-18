@@ -14,7 +14,6 @@ public class AmbientLight {
      * A static instance representing no ambient light.
      */
     public static AmbientLight NONE=new AmbientLight(Color.BLACK,0);
-
     /**
      * Constructs an AmbientLight with a given intensity and attenuation factor.
      * @param Ia the intensity of the ambient light as a Color.
@@ -32,5 +31,10 @@ public class AmbientLight {
     public AmbientLight(Color Ia, double Ka) {
         intensity=Ia.scale(Ka);
     }
+    /**
+     * Returns the intensity of the AmbientLight.
+     *
+     * @return the intensity of the AmbientLight
+     */
     public Color getIntensity(){return intensity;}
 }
