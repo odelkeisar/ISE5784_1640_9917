@@ -135,7 +135,8 @@ public class Camera implements Cloneable {
         return this;
     }
     /**
-     * Casts a ray through a certain pixel, follows the ray and writes the resulting color to the image using writePixel of the image maker.
+     * Casts a ray through a certain pixel, follows the ray and writes the resulting color to the image using writePixel
+     * of the image maker.
      *
      * @param nX the number of pixels along the x-axis
      * @param nY the number of pixels along the y-axis
@@ -143,7 +144,9 @@ public class Camera implements Cloneable {
      * @param i the row index of the pixel
      */
     private void castRay(int nX, int nY, int j, int i){
-        imageWriter.writePixel(j,i,rayTracer.traceRay(constructRay(nX, nY, j,i)));
+        Ray ray = constructRay(nX, nY, j, i);
+        Color color = rayTracer.traceRay(ray);
+        imageWriter.writePixel(j,i, color);
     }
 
     /**
