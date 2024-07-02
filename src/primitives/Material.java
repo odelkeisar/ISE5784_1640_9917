@@ -54,7 +54,7 @@ public class Material {
      * @param nShininess the shininess exponent
      * @return the current Material object for chaining
      */
-    public Material setNShininess(int nShininess){
+    public Material setShininess(int nShininess){
         this.nShininess=nShininess;
         return this;
     }
