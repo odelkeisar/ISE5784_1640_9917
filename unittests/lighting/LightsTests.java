@@ -173,7 +173,7 @@ public class LightsTests {
         scene1.geometries.add(sphere);
         scene1.lights
                 .add(new SpotLight(sphereLightColor, sphereLightPosition, new Vector(1, 1, -0.5))
-                        .setKl(0.001).setKq(0.00004).setNarrowBeam(10));
+                        .setKl(0.001).setKq(0.00004)); //.setNarrowBeam(10));
 
         camera1.setImageWriter(new ImageWriter("lightSphereSpotSharp", 500, 500))
                 .build()
@@ -186,12 +186,71 @@ public class LightsTests {
     public void trianglesSpotSharp() throws CloneNotSupportedException {
         scene2.geometries.add(triangle1, triangle2);
         scene2.lights.add(new SpotLight(trianglesLightColor, trianglesLightPosition, trianglesLightDirection)
-                .setKl(0.001).setKq(0.00004).setNarrowBeam(10));
+                .setKl(0.001).setKq(0.00004));//.setNarrowBeam(10));
 
         camera2.setImageWriter(new ImageWriter("lightTrianglesSpotSharp", 500, 500))
                 .build()
                 .renderImage()
                 .writeToImage();
+    }
+
+    /**
+     * Produce a picture of a sphere with multiple light sources
+     */
+    @Test
+    public void sphereMultiLightSource() throws CloneNotSupportedException {
+        scene1.geometries.add(sphere);
+        scene1.lights.add(new SpotLight(
+                new Color(242, 0, 0),
+                new Point(0, 1000, 1000),
+                new Vector(0, -1, -1))
+                .setKl(0.000001).setKq(0.0000004));
+        scene1.lights
+                .add(new PointLight(
+                        new Color(0, 203, 0),
+                        new Point(-25, 0, 25))
+                        .setKl(0.00000001).setKq(0.000000002));
+        scene1.lights.add(new DirectionalLight(
+                new Color(241, 199, 0),
+                new Vector(0, 0, -1)));
+
+        ImageWriter imageWriter = new ImageWriter("sphereMultiLightSource", 500, 500);
+        camera1.setImageWriter(imageWriter) //
+                .setRayTracer(new SimpleRayTracer(scene1) {
+                }).build() //
+                .renderImage() //
+                .writeToImage(); //
+
+    }
+
+    /**
+     * Produce a picture of two triangles with multiple light sources
+     */
+    @Test
+    public void triangleMultiLightSource() throws CloneNotSupportedException {
+        scene2.geometries.add(triangle1, triangle2);
+        scene2.lights.add(new SpotLight(
+                        new Color(0, 500, 100),
+                        new Point(0, 20, 10),
+                        new Vector(-8, 5, -1))
+                        .setKl(0.000001).setKq(0.0000004));
+
+        scene2.lights
+                .add(new PointLight(
+                        new Color(0, 203, 0),
+                        new Point(0, 1, -1))
+                        .setKl(0.00000001).setKq(0.000000002));
+
+        scene2.lights.add(new DirectionalLight(
+                new Color(300, 150, 0),
+                new Vector(0, 0, -1)));
+
+        ImageWriter imageWriter = new ImageWriter("triangleMultiLightSource", 500, 500);
+        camera2.setImageWriter(imageWriter) //
+                .setRayTracer(new SimpleRayTracer(scene2))
+                .build()//
+                .renderImage() //
+                .writeToImage(); //
     }
 
 }
