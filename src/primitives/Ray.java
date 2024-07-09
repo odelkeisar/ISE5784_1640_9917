@@ -11,7 +11,7 @@ import geometries.Intersectable.GeoPoint;
  */
 public class Ray {
 
-
+    private static final double DELTA = 0.1;
     private final Point head;
 
     private final Vector direction;
@@ -25,6 +25,20 @@ public class Ray {
     public Ray(Point head, Vector direction) {
         this.head = head;
         this.direction = direction.normalize();
+    }
+    /**
+     * costruct a ray and move point slightly
+     *  @param point     the point
+     * @param direction direction vector
+     * @param normal         normal
+     */
+
+    public Ray(Point point, Vector direction, Vector normal) {
+        this.direction = direction.normalize();
+        double nv = normal.dotProduct(this.direction);
+        Vector dltVector = normal.scale(nv < 0 ? -DELTA : DELTA);
+        head = point.add(dltVector);
+
     }
 
     /**

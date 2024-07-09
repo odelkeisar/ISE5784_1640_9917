@@ -42,11 +42,11 @@ public class Geometries extends Intersectable{
      *         If there are no intersections, returns null.
      */
     @Override
-    protected List<GeoPoint> findGeoIntersectionsHelper(Ray ray) {
+    protected List<GeoPoint> findGeoIntersectionsHelper(Ray ray,double maxDistance) {
         List<GeoPoint> intersectionsResult = null;
         for (Intersectable geometry : geometries)
         {
-            var intersections = geometry.findGeoIntersections(ray);
+            var intersections = geometry.findGeoIntersections(ray,maxDistance);
             if (intersections != null)
             {
                 if (intersectionsResult == null)

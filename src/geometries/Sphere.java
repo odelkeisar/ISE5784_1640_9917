@@ -5,6 +5,7 @@ import primitives.Ray;
 import primitives.Vector;
 
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 
 import static primitives.Util.alignZero;
@@ -48,7 +49,7 @@ public class Sphere extends RadialGeometry {
      *         If there are no intersections, returns null.
      */
     @Override
-    protected List<GeoPoint> findGeoIntersectionsHelper(Ray ray) {
+    protected List<GeoPoint> findGeoIntersectionsHelper(Ray ray, double maxDistance) {
 
         Point head = ray.getHead();
         Vector direction = ray.getDirection();
@@ -79,17 +80,41 @@ public class Sphere extends RadialGeometry {
         if (t1 > 0 && t2 > 0) {
             Point p1=ray.getPoint(t1); //p1=head+t1*v
             Point p2=ray.getPoint(t2); //p2=head+t2*v
-            return (List<GeoPoint>) List.of(new GeoPoint(this,p1),new GeoPoint(this,p2) ).stream()
-                    .sorted(Comparator.comparingDouble(p -> p.point.distance(head)))
+            List<GeoPoint> list = null;
+
+            double dis = p1.distance(ray.getHead());
+            if (alignZero(dis - maxDistance) <= 0) { //if the distance is less than the maximum
+                list = new LinkedList<>();
+                list.add(new GeoPoint(this, p1));
+            }
+
+            dis = p2.distance(ray.getHead());
+            if (alignZero(dis - maxDistance) <= 0) { //if the distance is less than the maximum
+                if (list == null) list = new LinkedList<>();
+                list.add(new GeoPoint(this, p2));
+
+            }
+
+            return list==null?null: list.stream().sorted(Comparator.comparingDouble(p -> p.point.distance(head)))
                     .toList();
+            //return (List<GeoPoint>) List.of(new GeoPoint(this,p1),new GeoPoint(this,p2) ).stream()
+               //     .sorted(Comparator.comparingDouble(p -> p.point.distance(head)))
+               //     .toList();
         }
         if (t1 > 0 ) {
             Point p1=ray.getPoint(t1); //p1=head+t1*v
-            return List.of(new GeoPoint(this,p1));
+            double dis = p1.distance(ray.getHead());
+
+            if (alignZero(dis - maxDistance) <= 0) { //if the distance is less than the maximum
+                return List.of(new GeoPoint(this, p1));
+            }
         }
         if (t2 >0 ) {
             Point p2=ray.getPoint(t2); //p2=head+t2*v
-            return List.of(new GeoPoint(this,p2));
+            double dis = p2.distance(ray.getHead());
+            if (alignZero(dis - maxDistance) <= 0) { //if the distance is less than the maximum
+                return List.of(new GeoPoint(this, p2));
+            }
         }
         return null;
     }

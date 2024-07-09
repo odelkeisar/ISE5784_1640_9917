@@ -2,6 +2,7 @@ package geometries;
 
 import primitives.Point;
 import primitives.Ray;
+import primitives.Util;
 import primitives.Vector;
 
 import java.util.List;
@@ -66,7 +67,7 @@ public class Plane extends Geometry {
      * @return a list containing the intersection point between the ray and the plane.
      */
     @Override
-    protected List<GeoPoint> findGeoIntersectionsHelper(Ray ray) {
+    protected List<GeoPoint> findGeoIntersectionsHelper(Ray ray,double maxDistance) {
 
         Point p0 = ray.getHead();
         Vector v = ray.getDirection();
@@ -90,7 +91,7 @@ public class Plane extends Geometry {
 
         // Calculate the t parameter (t = (n * (p - p0)) / (n * v))
         double t = alignZero(t_numerator / t_denominator);
-        if (t <= 0) {
+        if (t <= 0 || Util.alignZero(t - maxDistance) >= 0 ) {
             return null;
         }
 

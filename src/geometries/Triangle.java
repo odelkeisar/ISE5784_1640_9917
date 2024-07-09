@@ -29,10 +29,10 @@ public class Triangle extends Polygon {
      *         If the ray intersects the plane of the triangle but not the triangle itself, returns null.
      */
     @Override
-    protected List<GeoPoint> findGeoIntersectionsHelper(Ray ray) {
+    protected List<GeoPoint> findGeoIntersectionsHelper(Ray ray,double maxDistance) {
 
         // Find intersection points with the plane of the triangle
-        List<GeoPoint> result = plane.findGeoIntersections(ray);
+        List<GeoPoint> result = plane.findGeoIntersections(ray,maxDistance);
         if (result == null) {
             return null;
         }
