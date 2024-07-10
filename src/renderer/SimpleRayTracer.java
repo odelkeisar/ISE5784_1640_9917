@@ -27,6 +27,11 @@ public class SimpleRayTracer extends RayTracerBase {
         super(scene);
     }
 
+    public SimpleRayTracer setAntiA(){
+        antiA=true;
+        return this;
+    }
+
     /**
      * Traces a ray through the scene and calculates the color based on intersections.
      *

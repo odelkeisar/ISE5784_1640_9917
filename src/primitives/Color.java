@@ -8,7 +8,8 @@ package primitives;
  * @author Dan Zilberstein
  */
 public class Color {
-   /**
+    public static final java.awt.Color WHITE=null;
+    /**
     * The internal fields maintain RGB components as double numbers from 0 to
     * whatever...
     */

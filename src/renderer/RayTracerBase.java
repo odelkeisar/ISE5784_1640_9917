@@ -8,7 +8,7 @@ import scene.Scene;
 public abstract class RayTracerBase {
 
     protected Scene scene = null;
-
+    protected boolean antiA=false;
     /**
      * Constructs a RayTracerBase with the specified scene.
      * @param scene the {@link Scene} to be rendered
@@ -16,6 +16,11 @@ public abstract class RayTracerBase {
     public RayTracerBase(Scene scene) {
         this.scene = scene;
     }
+    public RayTracerBase setAntiA(){
+        antiA=true;
+        return this;
+    }
+
 
     /**
      * Traces a ray in the scene and calculates the color at the intersection point.
@@ -23,4 +28,6 @@ public abstract class RayTracerBase {
      * @return The color at the intersection point, or the background color if no intersection is found.
      */
     public abstract Color traceRay(Ray ray);
+
+    public boolean isAntiA() { return antiA; }
 }

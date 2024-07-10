@@ -2,6 +2,8 @@ package renderer;
 
 import primitives.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.MissingResourceException;
 
 import static primitives.Util.isZero;
@@ -144,9 +146,64 @@ public class Camera implements Cloneable {
      * @param i the row index of the pixel
      */
     private void castRay(int nX, int nY, int j, int i){
-        Ray ray = constructRay(nX, nY, j, i);
-        Color color = rayTracer.traceRay(ray);
+        Color color=new Color(Color.WHITE.BLACK);
+
+        if(rayTracer.isAntiA()){
+            List<Ray> rays = constructRays(nX, nY, j, i);
+            for (Ray ray : rays){
+                Color tmp = rayTracer.traceRay(ray);
+                color = color.add(tmp.scale(1.0 / rays.size()));
+            }
+        }
+        else {
+            Ray ray = constructRay(nX, nY, j, i);
+            color = rayTracer.traceRay(ray);
+        }
         imageWriter.writePixel(j,i, color);
+    }
+
+    public List<Ray> constructRays(int Nx, int Ny, int j, int i)
+    {
+        //Image center
+        Point Pc = p0.add(vTo.scale(distance));
+
+        //Ratio (pixel width & height)
+        double Ry =height/ Ny;
+        double Rx = width/Nx;
+
+        //delta values for going to Pixel[i,j] from Pc
+        double yI =  -(i - (Ny -1)/2)* Ry;
+        double xJ =  (j - (Nx -1)/2)* Rx;
+
+        if (! isZero(xJ) )
+        {
+            Pc = Pc.add(vRight.scale(xJ));
+        }
+
+        if (! isZero(yI))
+        {
+            Pc = Pc.add(vUp.scale(yI));
+        }
+        List<Ray> rays=new ArrayList<>();
+
+        /**
+         * puts the pixel center in the first place on the list
+         */
+        rays.add(new Ray(p0,Pc.subtract(p0)));
+
+        /**
+         * creating Ry*Rx rays for each pixel.
+         */
+        Point newPoint=new Point(Pc.getX()-Rx/2,Pc.getY()+Rx/2,Pc.getZ());
+        for (double t = newPoint.getY(); t >newPoint.getY()-Ry; t-=0.01)
+        {
+            for (double k = newPoint.getX(); k < newPoint.getX()+Rx; k+=0.01)
+            {
+                rays.add(new Ray(p0,new Point(k,t,Pc.getZ()).subtract(p0)));
+            }
+        }
+
+        return rays;
     }
 
     /**
