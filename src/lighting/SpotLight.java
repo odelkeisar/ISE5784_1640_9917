@@ -29,7 +29,10 @@ public class SpotLight extends PointLight {
         super.setKq(kQ);
         return this;
     }
-
+    public SpotLight setRadius(double radius){
+        this.radius=radius;
+        return this;
+    }
     @Override
     public Color getIntensity(Point point) {
         double max = Math.max(0, direction.dotProduct(getL(point)));

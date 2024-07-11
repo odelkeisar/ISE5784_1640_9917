@@ -4,21 +4,29 @@ import primitives.Color;
 import primitives.Point;
 import primitives.Vector;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
+
+import static primitives.Util.isZero;
+
 /**
  * The PointLight class represents a point light source in a 3D scene.
  * A point light source emits light in all directions from a specific position in space.
  */
 public class PointLight extends Light implements LightSource {
+    private static final Random RND = new Random();
     private Point position;
     private double kC = 1;
     private double kL = 0;
     private double kQ = 0;
+    protected double radius = 12;
 
     /**
      * Constructs a PointLight object with the specified intensity and position.
      *
      * @param intensity the intensity of the light
-     * @param position the position of the light source
+     * @param position  the position of the light source
      */
     public PointLight(Color intensity, Point position) {
         super(intensity);
@@ -56,6 +64,14 @@ public class PointLight extends Light implements LightSource {
     public PointLight setKq(double kQ) {
         this.kQ = kQ;
         return this;
+    }
+    public PointLight setRadius(double radius){
+        this.radius=radius;
+        return this;
+    }
+
+    public double getRadius(){
+        return radius;
     }
 
     /**
@@ -96,4 +112,44 @@ public class PointLight extends Light implements LightSource {
     public double getDistance(Point point) {
         return position.distance(point);
     }
+
+    @Override
+    public List<Vector> getBeamL(Point point, int countBeam) {
+
+        if (point.equals(position))
+            return null;
+
+        LinkedList<Vector> beam = new LinkedList<>();
+
+        // From point light position to p point
+        Vector v = this.getL(point);
+        beam.add(v);
+        if (countBeam <= 1)
+            return beam;
+
+        Vector normX, normY;
+
+        if (isZero(v.getX()) && isZero(v.getY()))
+            normX = new Vector(v.getZ() * -1, 0, 0).normalize();
+        else
+            normX = new Vector(v.getY() * -1, v.getX(), 0).normalize();
+
+        normY = v.crossProduct(normX).normalize();
+
+        for (int counter = 0; counter < countBeam; counter++) {
+            double angle = 2 * Math.PI * RND.nextDouble();
+            double r = radius * Math.sqrt(RND.nextDouble());
+
+            double x = r * Math.cos(angle);
+            double y = r * Math.sin(angle);
+
+            Vector offset = normX.scale(x).add(normY.scale(y));
+            Point newPoint = position.add(offset);
+
+            beam.add(point.subtract(newPoint).normalize());
+        }
+
+        return beam;
+    }
+
 }

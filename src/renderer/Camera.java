@@ -27,6 +27,7 @@ public class Camera implements Cloneable {
      */
     private Camera() {
     }
+
     /**
      * Gets the camera location.
      *
@@ -136,70 +137,60 @@ public class Camera implements Cloneable {
                 castRay(nX, nY, j, i);
         return this;
     }
+
     /**
      * Casts a ray through a certain pixel, follows the ray and writes the resulting color to the image using writePixel
      * of the image maker.
      *
      * @param nX the number of pixels along the x-axis
      * @param nY the number of pixels along the y-axis
-     * @param j the column index of the pixel
-     * @param i the row index of the pixel
+     * @param j  the column index of the pixel
+     * @param i  the row index of the pixel
      */
-    private void castRay(int nX, int nY, int j, int i){
-        Color color=new Color(Color.WHITE.BLACK);
+    private void castRay(int nX, int nY, int j, int i) {
+        Color color = new Color(Color.WHITE.BLACK);
 
-        if(rayTracer.isAntiA()){
+        if (rayTracer.isAntiA()) {
             List<Ray> rays = constructRays(nX, nY, j, i);
-            for (Ray ray : rays){
-                Color tmp = rayTracer.traceRay(ray);
-                color = color.add(tmp.scale(1.0 / rays.size()));
-            }
+            color = rayTracer.traceBeamRay(rays);
         }
         else {
             Ray ray = constructRay(nX, nY, j, i);
             color = rayTracer.traceRay(ray);
         }
-        imageWriter.writePixel(j,i, color);
+        imageWriter.writePixel(j, i, color);
     }
 
-    public List<Ray> constructRays(int Nx, int Ny, int j, int i)
-    {
+    public List<Ray> constructRays(int Nx, int Ny, int j, int i) {
         //Image center
         Point Pc = p0.add(vTo.scale(distance));
 
         //Ratio (pixel width & height)
-        double Ry =height/ Ny;
-        double Rx = width/Nx;
+        double Ry = height / Ny;
+        double Rx = width / Nx;
 
         //delta values for going to Pixel[i,j] from Pc
-        double yI =  -(i - (Ny -1)/2)* Ry;
-        double xJ =  (j - (Nx -1)/2)* Rx;
+        double yI = -(i - (Ny - 1) / 2) * Ry;
+        double xJ = (j - (Nx - 1) / 2) * Rx;
 
-        if (! isZero(xJ) )
-        {
+        if (!isZero(xJ)) {
             Pc = Pc.add(vRight.scale(xJ));
         }
 
-        if (! isZero(yI))
-        {
+        if (!isZero(yI)) {
             Pc = Pc.add(vUp.scale(yI));
         }
-        List<Ray> rays=new ArrayList<>();
+        List<Ray> rays = new ArrayList<>();
 
-        /**
-         * puts the pixel center in the first place on the list
-         */
-        rays.add(new Ray(p0,Pc.subtract(p0)));
+        rays.add(new Ray(p0, Pc.subtract(p0)));
 
         /**
          * creating Ry*Rx rays for each pixel.
          */
-        Point newPoint=new Point(Pc.getX()-Rx/2,Pc.getY()+Rx/2,Pc.getZ());
-        for (double t = newPoint.getY(); t >newPoint.getY()-Ry; t-=0.01)
-        {
-            for (double k = newPoint.getX(); k < newPoint.getX()+Rx; k+=0.01)
-            {
-                rays.add(new Ray(p0,new Point(k,t,Pc.getZ()).subtract(p0)));
+        Point newPoint = new Point(Pc.getX() - Rx / 2, Pc.getY() + Rx / 2, Pc.getZ());
+        for (double t = newPoint.getY(); t > newPoint.getY() - Ry; t -= 0.01) {
+            for (double k = newPoint.getX(); k < newPoint.getX() + Rx; k += 0.01) {
+                rays.add(new Ray(p0, new Point(k, t, Pc.getZ()).subtract(p0)));
             }
         }
 
@@ -217,7 +208,7 @@ public class Camera implements Cloneable {
         for (int i = 0; i < imageWriter.getNy(); i++)
             for (int j = 0; j < imageWriter.getNx(); j++)
                 if (j % interval == 0 || i % interval == 0)
-                    imageWriter.writePixel(j,i, color);
+                    imageWriter.writePixel(j, i, color);
         return this;
     }
 
@@ -227,7 +218,7 @@ public class Camera implements Cloneable {
      *
      * @throws MissingResourceException if the ImageWriter is not set
      */
-    public void writeToImage(){
+    public void writeToImage() {
         imageWriter.writeToImage();
     }
 

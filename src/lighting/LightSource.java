@@ -2,6 +2,8 @@ package lighting;
 
 import primitives.*;
 
+import java.util.List;
+
 public interface LightSource {
 
     /**
@@ -17,12 +19,13 @@ public interface LightSource {
      * @return Vector object
      */
     public Vector getL(Point point);
-
+    public List<Vector> getBeamL(Point point, int countBeam);
     /**
      * Returns the distance from the light source to a given point.
      *
      * @param point The point at which to calculate the distance.
      * @return The distance from the light source to the given point.
      */
-    double getDistance(Point point);
+    public double getDistance(Point point);
+
 }
