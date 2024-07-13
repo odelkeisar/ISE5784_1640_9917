@@ -65,12 +65,13 @@ public class PointLight extends Light implements LightSource {
         this.kQ = kQ;
         return this;
     }
-    public PointLight setRadius(double radius){
-        this.radius=radius;
+
+    public PointLight setRadius(double radius) {
+        this.radius = radius;
         return this;
     }
 
-    public double getRadius(){
+    public double getRadius() {
         return radius;
     }
 
@@ -90,6 +91,17 @@ public class PointLight extends Light implements LightSource {
     }
 
     /**
+     * Returns the distance from the light source to a given point.
+     *
+     * @param point the point at which to calculate the distance
+     * @return the distance from the light source to the given point
+     */
+    @Override
+    public double getDistance(Point point) {
+        return position.distance(point);
+    }
+
+    /**
      * Returns the direction of the light at a given point.
      *
      * @param point the point at which to calculate the light direction
@@ -102,17 +114,15 @@ public class PointLight extends Light implements LightSource {
         return point.subtract(position).normalize();
     }
 
-    /**
-     * Returns the distance from the light source to a given point.
-     *
-     * @param point the point at which to calculate the distance
-     * @return the distance from the light source to the given point
-     */
-    @Override
-    public double getDistance(Point point) {
-        return position.distance(point);
-    }
 
+    /**
+     * Generates a list of light beam directions from the light source to the given point.
+     * The beams are randomly distributed within a circle centered at the light source.
+     *
+     * @param point     the target point to which the beams are directed
+     * @param countBeam the number of beams to generate
+     * @return a list of vectors representing the directions of the beams
+     */
     @Override
     public List<Vector> getBeamL(Point point, int countBeam) {
 
@@ -129,6 +139,7 @@ public class PointLight extends Light implements LightSource {
 
         Vector normX, normY;
 
+        // Determine two orthogonal vectors in the plane perpendicular to v
         if (isZero(v.getX()) && isZero(v.getY()))
             normX = new Vector(v.getZ() * -1, 0, 0).normalize();
         else
@@ -136,20 +147,19 @@ public class PointLight extends Light implements LightSource {
 
         normY = v.crossProduct(normX).normalize();
 
+        // Generate additional beam directions within the specified radius
         for (int counter = 0; counter < countBeam; counter++) {
-            double angle = 2 * Math.PI * RND.nextDouble();
-            double r = radius * Math.sqrt(RND.nextDouble());
+            double angle = 2 * Math.PI * RND.nextDouble();  // Random angle
+            double r = radius * Math.sqrt(RND.nextDouble());  // Random radius within the circle
 
-            double x = r * Math.cos(angle);
-            double y = r * Math.sin(angle);
+            double x = r * Math.cos(angle);  // X coordinate
+            double y = r * Math.sin(angle);  // Y coordinate
 
             Vector offset = normX.scale(x).add(normY.scale(y));
-            Point newPoint = position.add(offset);
+            Point newPoint = position.add(offset); // New point within the radius
 
             beam.add(point.subtract(newPoint).normalize());
         }
-
         return beam;
     }
-
 }

@@ -101,6 +101,46 @@ public class Camera implements Cloneable {
         return new Builder();
     }
 
+
+    /**
+     * Renders the image by casting rays through each pixel and writing the resulting color to the image.
+     * The method iterates through all the pixels in the image and calls the castRay method for each pixel.
+     */
+    public Camera renderImage() {
+        int nX = imageWriter.getNx();
+        int nY = imageWriter.getNy();
+
+        for (int i = 0; i < nY; i++)
+            for (int j = 0; j < nX; j++)
+                castRay(nX, nY, j, i);
+        return this;
+    }
+
+    /**
+     * Casts a ray through a specified pixel on the view plane, determines its color by tracing the ray,
+     * and writes the resulting color to the image at the given pixel coordinates (j, i).
+     * <p>
+     * If anti-aliasing is enabled in the RayTracer, multiple rays are cast through the pixel to achieve
+     * smoother color transitions.
+     *
+     * @param nX number of horizontal pixels in the image.
+     * @param nY number of vertical pixels in the image.
+     * @param j  horizontal index of the pixel in the image.
+     * @param i  vertical index of the pixel in the image.
+     */
+    private void castRay(int nX, int nY, int j, int i) {
+        Color color = new Color(Color.WHITE.BLACK);
+
+        if (rayTracer.isAntiA()) {
+            List<Ray> rays = constructRays(nX, nY, j, i);
+            color = rayTracer.traceBeamRay(rays);
+        } else {
+            Ray ray = constructRay(nX, nY, j, i);
+            color = rayTracer.traceRay(ray);
+        }
+        imageWriter.writePixel(j, i, color);
+    }
+
     /**
      * Constructs a ray through a given pixel on the view plane.
      *
@@ -125,53 +165,25 @@ public class Camera implements Cloneable {
     }
 
     /**
-     * Renders the image by casting rays through each pixel and writing the resulting color to the image.
-     * The method iterates through all the pixels in the image and calls the castRay method for each pixel.
-     */
-    public Camera renderImage() {
-        int nX = imageWriter.getNx();
-        int nY = imageWriter.getNy();
-
-        for (int i = 0; i < nY; i++)
-            for (int j = 0; j < nX; j++)
-                castRay(nX, nY, j, i);
-        return this;
-    }
-
-    /**
-     * Casts a ray through a certain pixel, follows the ray and writes the resulting color to the image using writePixel
-     * of the image maker.
+     * Constructs multiple rays through a given pixel on the view plane to simulate anti-aliasing.
      *
-     * @param nX the number of pixels along the x-axis
-     * @param nY the number of pixels along the y-axis
-     * @param j  the column index of the pixel
-     * @param i  the row index of the pixel
+     * @param nX number of horizontal pixels.
+     * @param nY number of vertical pixels.
+     * @param j  horizontal index of the pixel.
+     * @param i  vertical index of the pixel.
+     * @return a list of constructed rays.
      */
-    private void castRay(int nX, int nY, int j, int i) {
-        Color color = new Color(Color.WHITE.BLACK);
-
-        if (rayTracer.isAntiA()) {
-            List<Ray> rays = constructRays(nX, nY, j, i);
-            color = rayTracer.traceBeamRay(rays);
-        }
-        else {
-            Ray ray = constructRay(nX, nY, j, i);
-            color = rayTracer.traceRay(ray);
-        }
-        imageWriter.writePixel(j, i, color);
-    }
-
-    public List<Ray> constructRays(int Nx, int Ny, int j, int i) {
+    public List<Ray> constructRays(int nX, int nY, int j, int i) {
         //Image center
         Point Pc = p0.add(vTo.scale(distance));
 
         //Ratio (pixel width & height)
-        double Ry = height / Ny;
-        double Rx = width / Nx;
+        double Ry = height / nY;
+        double Rx = width / nX;
 
         //delta values for going to Pixel[i,j] from Pc
-        double yI = -(i - (Ny - 1) / 2) * Ry;
-        double xJ = (j - (Nx - 1) / 2) * Rx;
+        double yI = -(i - (nY - 1) / 2) * Ry;
+        double xJ = (j - (nX - 1) / 2) * Rx;
 
         if (!isZero(xJ)) {
             Pc = Pc.add(vRight.scale(xJ));
@@ -187,9 +199,10 @@ public class Camera implements Cloneable {
         /**
          * creating Ry*Rx rays for each pixel.
          */
-        Point newPoint = new Point(Pc.getX() - Rx / 2, Pc.getY() + Rx / 2, Pc.getZ());
-        for (double t = newPoint.getY(); t > newPoint.getY() - Ry; t -= 0.01) {
-            for (double k = newPoint.getX(); k < newPoint.getX() + Rx; k += 0.01) {
+        Point point = new Point(Pc.getX() - Rx / 2, Pc.getY() + Ry / 2, Pc.getZ());
+
+        for (double t = point.getY(); t > point.getY() - Ry; t -= 0.01) {
+            for (double k = point.getX(); k < point.getX() + Rx; k += 0.01) {
                 rays.add(new Ray(p0, new Point(k, t, Pc.getZ()).subtract(p0)));
             }
         }

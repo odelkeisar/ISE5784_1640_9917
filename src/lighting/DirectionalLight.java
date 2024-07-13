@@ -56,12 +56,20 @@ public class DirectionalLight extends Light implements LightSource {
      * @return Double.POSITIVE_INFINITY since the light source is considered to be at an infinite distance
      */
     @Override
-    public double getDistance(Point point){
+    public double getDistance(Point point) {
         return Double.POSITIVE_INFINITY;
     }
-    @Override
-    public List<Vector> getBeamL(Point point, int countBeam){
-        return List.of(new Vector(new Double3(direction.getX(),direction.getY(),direction.getZ())));
 
+    /**
+     * Returns a beam of light directions at a given point.
+     * For directional light, the beam consists of a single direction since the light source is parallel.
+     *
+     * @param point     the point at which to calculate the light direction
+     * @param countBeam the number of light directions in the beam (ignored for directional light)
+     * @return a list containing a single direction vector
+     */
+    @Override
+    public List<Vector> getBeamL(Point point, int countBeam) {
+        return List.of(new Vector(direction.getX(), direction.getY(), direction.getZ()));
     }
 }

@@ -29,22 +29,48 @@ public class SimpleRayTracer extends RayTracerBase {
         super(scene);
     }
 
+
+    /**
+     * Constructs a SimpleRayTracer with the specified scene and settings.
+     *
+     * @param scene       the scene to be rendered
+     * @param antiA       true to enable anti-aliasing, false otherwise
+     * @param softShadows true to enable soft shadows, false otherwise
+     */
     public SimpleRayTracer(Scene scene, boolean antiA, boolean softShadows) {
         super(scene, antiA, softShadows);
     }
 
+    /**
+     * Enables or disables anti-aliasing for ray tracing.
+     *
+     * @param antiA true to enable anti-aliasing, false otherwise
+     * @return this SimpleRayTracer instance for method chaining
+     */
     public SimpleRayTracer setAntiA(boolean antiA) {
         this.antiA = antiA;
         return this;
     }
 
+    /**
+     * Enables or disables soft shadows for ray tracing.
+     *
+     * @param softShadows true to enable soft shadows, false otherwise
+     * @return this SimpleRayTracer instance for method chaining
+     */
     public SimpleRayTracer setSoftShadows(boolean softShadows) {
         this.softShadows = softShadows;
         return this;
     }
 
-    public SimpleRayTracer setCountBeam(int countBeam){
-        this.countBeam=countBeam;
+    /**
+     * Sets the number of rays in a beam for tracing soft shadows
+     *
+     * @param countBeam the number of rays in a beam
+     * @return this SimpleRayTracer instance for method chaining
+     */
+    public SimpleRayTracer setCountBeam(int countBeam) {
+        this.countBeam = countBeam;
         return this;
     }
 
@@ -60,6 +86,13 @@ public class SimpleRayTracer extends RayTracerBase {
         return closestGeoPoint == null ? scene.background : calcColor(closestGeoPoint, ray);
     }
 
+    /**
+     * Traces a beam of rays through the scene and calculates the resulting color.
+     *
+     * @param rays The list of rays in the beam.
+     * @return The color calculated from tracing the beam of rays.
+     */
+    @Override
     public Color traceBeamRay(List<Ray> rays) {
         Color color = Color.BLACK;
         for (Ray ray : rays) {
@@ -123,12 +156,11 @@ public class SimpleRayTracer extends RayTracerBase {
             double nl = alignZero(n.dotProduct(l));
             if (nl * nv > 0) {
                 Double3 ktr;
-                if(softShadows) //if we want soft shadows
-                    ktr = transparencyBeam(geoPoint,lightSource, n,nv);
+                if (softShadows) //if we want soft shadows
+                    ktr = transparencyBeam(geoPoint, lightSource, n, nv);
                 else
-                    ktr = transparency(geoPoint, lightSource, l, n,nv);
+                    ktr = transparency(geoPoint, lightSource, l, n, nv);
 
-                //Double3 ktr = transparency(geoPoint, lightSource, l, n, nv);
                 if (ktr.greaterThan(MIN_CALC_COLOR_K)) {
                     Color iL = lightSource.getIntensity(geoPoint.point).scale(ktr);
                     color = color.add(iL.scale(calcDiffusive(material, nl)), iL.scale(calcSpecular(material, n, l, nl, v)));
@@ -312,12 +344,23 @@ public class SimpleRayTracer extends RayTracerBase {
         return ktr;
     }
 
+    /**
+     * Calculates the transparency factor (ktr) of a GeoPoint using multiple rays (beam).
+     *
+     * @param geoPoint    The GeoPoint to calculate the transparency factor at.
+     * @param lightSource The light source providing the beam of rays.
+     * @param n           The normal vector at the GeoPoint.
+     * @param nv          The dot product of the normal vector and the view direction.
+     * @return The transparency factor (ktr) calculated from the beam of rays.
+     */
     private Double3 transparencyBeam(GeoPoint geoPoint, LightSource lightSource, Vector n, double nv) {
         Double3 tempKtr = Double3.ZERO;
-        List<Vector> beamL = lightSource.getBeamL(geoPoint.point,countBeam);
+        List<Vector> beamL = lightSource.getBeamL(geoPoint.point, countBeam);
+        if (beamL == null)
+            return tempKtr;
 
         for (Vector vl : beamL) {
-            tempKtr = tempKtr.add(transparency(geoPoint,lightSource,vl,n,nv));
+            tempKtr = tempKtr.add(transparency(geoPoint, lightSource, vl, n, nv));
         }
         tempKtr = tempKtr.reduce(beamL.size());
 
