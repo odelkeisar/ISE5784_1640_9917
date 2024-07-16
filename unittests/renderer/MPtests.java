@@ -84,6 +84,8 @@ public class MPtests {
     }
 
 
+
+
     /**
      * Test method to render the scene without any improvements.
      */
@@ -91,7 +93,7 @@ public class MPtests {
     public void megaTest() throws CloneNotSupportedException {
 
         cameraBuilder.setLocation(new Point(0, 0, 1000)).setVpDistance(1000).setVpSize(200, 200)
-                .setImageWriter(new ImageWriter("image_without2_improvements", 1000, 1000)).build().renderImage().writeToImage();
+                .setImageWriter(new ImageWriter("image_without_improvements1", 1000, 1000)).build().renderImage().writeToImage();
     }
 
     /**
