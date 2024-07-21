@@ -5,6 +5,7 @@ import lighting.LightSource;
 import primitives.*;
 import scene.Scene;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import static primitives.Util.alignZero;
@@ -34,22 +35,10 @@ public class SimpleRayTracer extends RayTracerBase {
      * Constructs a SimpleRayTracer with the specified scene and settings.
      *
      * @param scene       the scene to be rendered
-     * @param antiA       true to enable anti-aliasing, false otherwise
      * @param softShadows true to enable soft shadows, false otherwise
      */
-    public SimpleRayTracer(Scene scene, boolean antiA, boolean softShadows) {
-        super(scene, antiA, softShadows);
-    }
-
-    /**
-     * Enables or disables anti-aliasing for ray tracing.
-     *
-     * @param antiA true to enable anti-aliasing, false otherwise
-     * @return this SimpleRayTracer instance for method chaining
-     */
-    public SimpleRayTracer setAntiA(boolean antiA) {
-        this.antiA = antiA;
-        return this;
+    public SimpleRayTracer(Scene scene, boolean softShadows) {
+        super(scene, softShadows);
     }
 
     /**
@@ -366,4 +355,81 @@ public class SimpleRayTracer extends RayTracerBase {
 
         return tempKtr;
     }
+
+//    /**
+//     * Helper method for adaptive super-sampling.
+//     * This method recursively divides the given segment into smaller sub-segments to determine
+//     * the color by tracing rays through the scene. It aims to optimize the rendering by reducing
+//     * the number of rays traced while maintaining image quality.
+//     *
+//     * @param centerP   The center point of the current segment.
+//     * @param Width     The width of the current segment.
+//     * @param Height    The height of the current segment.
+//     * @param minWidth  The minimum width for a segment to stop further subdivision.
+//     * @param minHeight The minimum height for a segment to stop further subdivision.
+//     * @param cameraLoc The location of the camera.
+//     * @param vRight    The right vector from the camera.
+//     * @param Vup       The up vector from the camera.
+//     * @param prePoints The list of previously processed points to avoid redundant calculations.
+//     * @return The color of the segment after adaptive super-sampling.
+//     */
+//    @Override
+//    public Color AdaptiveSuperSamplingHelper(Point centerP, double Width, double Height, double minWidth, double minHeight, Point cameraLoc, Vector vRight, Vector Vup, List<Point> prePoints) {
+//        /////1. if we got to the minimum segment - return  the ray
+//        if (Width < minWidth * 2 || Height < minHeight * 2) {
+//            return traceRay(new Ray(cameraLoc, centerP.subtract(cameraLoc)));
+//        }
+//        /////2. divides the current segment to 4 sub-segments
+//        List<Point> nextCenterPList = new LinkedList<>();//the next center for the next iteration
+//        List<Point> cornersList = new LinkedList<>();//the current points
+//        List<Color> colorList = new LinkedList<>();//the colors of the current points
+//        Point tempCorner;
+//        for (int i = -1; i <= 1; i += 2) {
+//            for (int j = -1; j <= 1; j += 2) {
+//                tempCorner = centerP.add(vRight.scale(i * Width / 2)).add(Vup.scale(j * Height / 2));
+//                cornersList.add(tempCorner);
+//                if (prePoints == null || !isInList(prePoints, tempCorner)) {//add the point just if it's not already exist
+//                    nextCenterPList.add(centerP.add(vRight.scale(i * Width / 4)).add(Vup.scale(j * Height / 4)));
+//                    colorList.add(traceRay(new Ray(cameraLoc, tempCorner.subtract(cameraLoc))));
+//                }
+//            }
+//        }
+//        /////3. if there are no farther iterations needed
+//        if (nextCenterPList == null || nextCenterPList.size() == 0)
+//            return Color.BLACK;
+//
+//        /////4. checks if the color are similar enough
+//        boolean isAllEquals = true;
+//        Color tempColor = colorList.get(0);
+//        for (Color color : colorList) {
+//            if (!tempColor.isAlmostEquals(color)) {
+//                isAllEquals = false;
+//                break;
+//            }
+//        }
+//        if (isAllEquals)
+//            return tempColor;
+//
+//        /////5. for each of the 4 parts of the grid - continue to the next iteration of the recursion
+//        tempColor = Color.BLACK;
+//        for (Point center : nextCenterPList) {
+//            tempColor = tempColor.add(AdaptiveSuperSamplingHelper(center, Width / 2, Height / 2, minWidth, minHeight, cameraLoc, vRight, Vup, cornersList));
+//        }
+//        return tempColor.reduce(nextCenterPList.size());
+//    }
+//
+//    /**
+//     * Helper method to check if a point is in a list of points.
+//     *
+//     * @param pointsList The list of points.
+//     * @param point      The point to check.
+//     * @return True if the point is in the list, false otherwise.
+//     */
+//    private boolean isInList(List<Point> pointsList, Point point) {
+//        for (Point tempPoint : pointsList) {
+//            if (point.equals(tempPoint))
+//                return true;
+//        }
+//        return false;
+//    }
 }

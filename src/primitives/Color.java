@@ -111,6 +111,17 @@ public class Color {
       if (k < 1) throw new IllegalArgumentException("Can't scale a color by a by a number lower than 1");
       return new Color(rgb.reduce(k));
    }
+   /**
+    * Checks if the color is almost equal
+    * @param color primitives
+    * @return
+    */
+   public  boolean isAlmostEquals(Color color) {
+
+      return  (Math.abs(this.rgb.d1-color.rgb.d1)<= 2) &&
+              (Math.abs(this.rgb.d2-color.rgb.d2)<= 2) &&
+              (Math.abs(this.rgb.d3-color.rgb.d3)<= 2);
+   }
 
    @Override
    public String toString() { return "rgb:" + rgb; }

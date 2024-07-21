@@ -1,11 +1,14 @@
 package renderer;
 
 import primitives.*;
+import primitives.Vector;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.MissingResourceException;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
+import static primitives.Util.alignZero;
 import static primitives.Util.isZero;
 
 /**
@@ -21,6 +24,11 @@ public class Camera implements Cloneable {
     private double distance = 0;
     private ImageWriter imageWriter;
     private RayTracerBase rayTracer;
+    private int countThread = 0;
+    private int numberRaysAdaptive = 20;
+    private boolean adaptive = false;
+    private boolean antiA = false;
+
 
     /**
      * Private constructor to enforce usage of the builder.
@@ -91,6 +99,23 @@ public class Camera implements Cloneable {
         return distance;
     }
 
+    /**
+     * Gets the number of threads used for rendering.
+     *
+     * @return the number of threads.
+     */
+    public double getCountTread() {
+        return countThread;
+    }
+
+    /**
+     * Checks if anti-aliasing is enabled.
+     *
+     * @return true if anti-aliasing is enabled, false otherwise.
+     */
+    public boolean getAntiA() {
+        return antiA;
+    }
 
     /**
      * Returns a new builder for the Camera.
@@ -101,37 +126,57 @@ public class Camera implements Cloneable {
         return new Builder();
     }
 
-
     /**
-     * Renders the image by casting rays through each pixel and writing the resulting color to the image.
-     * The method iterates through all the pixels in the image and calls the castRay method for each pixel.
+     * Renders the image by casting rays through each pixel and determining the color for each pixel.
+     * If multi-threading is enabled, the rendering process will utilize multiple threads.
+     *
+     * @return the current Camera instance for method chaining.
      */
     public Camera renderImage() {
         int nX = imageWriter.getNx();
         int nY = imageWriter.getNy();
 
-        for (int i = 0; i < nY; i++)
-            for (int j = 0; j < nX; j++)
-                castRay(nX, nY, j, i);
+        if (countThread == 0) {
+            for (int i = 0; i < nY; i++)
+                for (int j = 0; j < nX; j++)
+                    castRay(nX, nY, j, i);
+        } else {
+            ExecutorService executor = Executors.newFixedThreadPool(countThread);
+
+            for (int i = 0; i < nY; i++) {
+                for (int j = 0; j < nX; j++) {
+                    final int pixelI = i;
+                    final int pixelJ = j;
+                    executor.execute(() -> castRay(nX, nY, pixelJ, pixelI));
+                }
+            }
+            executor.shutdown();
+            try {
+                executor.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+        }
         return this;
     }
 
+
     /**
-     * Casts a ray through a specified pixel on the view plane, determines its color by tracing the ray,
-     * and writes the resulting color to the image at the given pixel coordinates (j, i).
-     * <p>
-     * If anti-aliasing is enabled in the RayTracer, multiple rays are cast through the pixel to achieve
-     * smoother color transitions.
+     * Casts a ray through a specific pixel and determines the color for that pixel.
+     * The method supports adaptive super-sampling and anti-aliasing.
      *
-     * @param nX number of horizontal pixels in the image.
-     * @param nY number of vertical pixels in the image.
-     * @param j  horizontal index of the pixel in the image.
-     * @param i  vertical index of the pixel in the image.
+     * @param nX number of horizontal pixels
+     * @param nY number of vertical pixels
+     * @param j  horizontal index of the pixel
+     * @param i  vertical index of the pixel
      */
     private void castRay(int nX, int nY, int j, int i) {
-        Color color = new Color(Color.WHITE.BLACK);
+        Color color = Color.BLACK;
 
-        if (rayTracer.isAntiA()) {
+        if (adaptive && antiA) {
+            color = AdaptiveSuperSampling(nX, nY, j, i, numberRaysAdaptive);
+        } else if (antiA) {
             List<Ray> rays = constructRays(nX, nY, j, i);
             color = rayTracer.traceBeamRay(rays);
         } else {
@@ -139,7 +184,105 @@ public class Camera implements Cloneable {
             color = rayTracer.traceRay(ray);
         }
         imageWriter.writePixel(j, i, color);
+        //System.out.printf("Numbers: %d, %d%n", j, i);
     }
+
+    /**
+     * Gets the center point of a specific pixel on the view plane.
+     *
+     * @param nX number of horizontal pixels
+     * @param nY number of vertical pixels
+     * @param j  horizontal index of the pixel
+     * @param i  vertical index of the pixel
+     * @return the center point of the specified pixel
+     */
+    private Point getCenterOfPixel(int nX, int nY, double j, double i) {
+        Point pc = p0.add(vTo.scale(distance));  // The center of the view plane
+        double rX = width / nX;  // The width of a single pixel
+        double rY = height / nY;  // The height of a single pixel
+        double xJ = (j - (nX - 1) / 2d) * rX;  // The offset on the x-axis
+        double yI = -(i - (nY - 1) / 2d) * rY;  // The offset on the y-axis
+        Point pIJ = pc;
+        if (!isZero(xJ))
+            pIJ = pIJ.add(vRight.scale(xJ));  // Adjust the point for the x offset
+        if (!isZero(yI))
+            pIJ = pIJ.add(vUp.scale(yI));
+        return pIJ;
+    }
+
+    /**
+     * Applies adaptive super sampling to a specific pixel.
+     *
+     * @param nX        number of horizontal pixels
+     * @param nY        number of vertical pixels
+     * @param j         horizontal index of the pixel
+     * @param i         vertical index of the pixel
+     * @param numOfRays number of rays to shoot per pixel for super sampling
+     * @return the calculated color after applying adaptive super sampling
+     */
+    private Color AdaptiveSuperSampling(int nX, int nY, int j, int i, int numOfRays) {
+        Point pIJ = getCenterOfPixel(nX, nY, j, i);
+        double rY = alignZero(height / nY); // The height of the pixel
+        double rX = alignZero(width / nX);  // The width of the pixel
+        double PRy = rY / numOfRays;
+        double PRx = rX / numOfRays;
+        return AdaptiveSuperSamplingHelper(pIJ, rX, rY, PRx, PRy,new HashMap<Point, Color>());
+    }
+
+
+
+    /**
+     * Helper method for adaptive super sampling, performing the recursive process.
+     *
+     * @param centerP   the center point of the current segment
+     * @param width     the width of the current segment
+     * @param height    the height of the current segment
+     * @param minWidth  the minimum width of the segment to stop recursion
+     * @param minHeight the minimum height of the segment to stop recursion
+     * @param prePoints a map of pre-calculated points and their colors
+     * @return the calculated color after applying adaptive super sampling
+     */
+    public Color AdaptiveSuperSamplingHelper(Point centerP, double width, double height, double minWidth, double minHeight, HashMap<Point, Color> prePoints) {
+        // If we got to the minimum segment - return the ray
+      if (width < minWidth * 2 || height < minHeight * 2)
+          return rayTracer.traceRay(new Ray(p0, centerP.subtract(p0)));
+
+        // Divide the current segment into 4 sub-segments
+        List<Point> nextCenterPList = new LinkedList<>(); // The next centers for the next iteration
+        HashMap<Point, Color> cornersList = new HashMap<Point, Color>(); // The current points
+        List<Color> colorList = new LinkedList<>(); // The colors of the current points
+
+        for (int i = -1; i <= 1; i += 2) {
+            for (int j = -1; j <= 1; j += 2) {
+                Point tempCorner = centerP.add(vRight.scale(i * width / 2)).add(vUp.scale(j * height / 2));
+                nextCenterPList.add(centerP.add(vRight.scale(i * width / 4)).add(vUp.scale(j * height / 4)));
+
+                // Check if the point is already in prePoints
+                Color color = prePoints.get(tempCorner);
+                if (color == null) {
+                    color = rayTracer.traceRay(new Ray(p0, tempCorner.subtract(p0)));
+                    colorList.add(color);
+                    cornersList.put(tempCorner, color);
+                } else {
+                    cornersList.put(tempCorner, color);
+                    colorList.add(color);
+                }
+            }
+        }
+
+        // Check if the colors are similar enough
+        boolean isAllEquals = colorList.stream().allMatch(colorList.get(0)::isAlmostEquals);
+        if (isAllEquals)
+            return colorList.get(0);
+
+        // Continue to the next iteration of the recursion for each part of the grid
+        Color tempColor = Color.BLACK;
+        for (Point center : nextCenterPList) {
+            tempColor = tempColor.add(AdaptiveSuperSamplingHelper(center, width / 2, height / 2, minWidth, minHeight, cornersList));
+        }
+        return tempColor.reduce(nextCenterPList.size());
+    }
+
 
     /**
      * Constructs a ray through a given pixel on the view plane.
@@ -151,16 +294,8 @@ public class Camera implements Cloneable {
      * @return the constructed ray.
      */
     public Ray constructRay(int nX, int nY, int j, int i) {
-        Point pc = p0.add(vTo.scale(distance));  // The center of the view plane
-        double rX = width / nX;  // The width of a single pixel
-        double rY = height / nY;  // The height of a single pixel
-        double xJ = (j - (nX - 1) / 2d) * rX;  // The offset on the x-axis
-        double yI = -(i - (nY - 1) / 2d) * rY;  // The offset on the y-axis
-        Point pIJ = pc;
-        if (!isZero(xJ))
-            pIJ = pIJ.add(vRight.scale(xJ));  // Adjust the point for the x offset
-        if (!isZero(yI))
-            pIJ = pIJ.add(vUp.scale(yI));  // Adjust the point for the y offset
+
+        Point pIJ = getCenterOfPixel(nX, nY, j, i);
         return new Ray(p0, pIJ.subtract(p0));  // Construct the ray from the camera to the point
     }
 
@@ -174,35 +309,22 @@ public class Camera implements Cloneable {
      * @return a list of constructed rays.
      */
     public List<Ray> constructRays(int nX, int nY, int j, int i) {
-        //Image center
-        Point Pc = p0.add(vTo.scale(distance));
 
-        //Ratio (pixel width & height)
-        double Ry = height / nY;
-        double Rx = width / nX;
+        Point Pc = getCenterOfPixel(nX, nY, j, i);
 
-        //delta values for going to Pixel[i,j] from Pc
-        double yI = -(i - (nY - 1) / 2) * Ry;
-        double xJ = (j - (nX - 1) / 2) * Rx;
-
-        if (!isZero(xJ)) {
-            Pc = Pc.add(vRight.scale(xJ));
-        }
-
-        if (!isZero(yI)) {
-            Pc = Pc.add(vUp.scale(yI));
-        }
         List<Ray> rays = new ArrayList<>();
-
         rays.add(new Ray(p0, Pc.subtract(p0)));
+
+        double rX = width / nX;
+        double rY = height / nY;
 
         /**
          * creating Ry*Rx rays for each pixel.
          */
-        Point point = new Point(Pc.getX() - Rx / 2, Pc.getY() + Ry / 2, Pc.getZ());
+        Point point = new Point(Pc.getX() - rX / 2, Pc.getY() + rY / 2, Pc.getZ());
 
-        for (double t = point.getY(); t > point.getY() - Ry; t -= 0.01) {
-            for (double k = point.getX(); k < point.getX() + Rx; k += 0.01) {
+        for (double t = point.getY(); t > point.getY() - rY; t -= 0.01) {
+            for (double k = point.getX(); k < point.getX() + rX; k += 0.01) {
                 rays.add(new Ray(p0, new Point(k, t, Pc.getZ()).subtract(p0)));
             }
         }
@@ -250,6 +372,28 @@ public class Camera implements Cloneable {
          */
         public Builder setLocation(Point point) {
             camera.p0 = point;
+            return this;
+        }
+
+        /**
+         * Sets the number of threads for rendering.
+         *
+         * @param countThread The number of threads.
+         * @return The Builder instance.
+         */
+        public Builder setCountThread(int countThread) {
+            camera.countThread = countThread;
+            return this;
+        }
+
+        /**
+         * Sets the number of rays for adaptive super-sampling.
+         *
+         * @param numberRaysAdaptive The number of rays.
+         * @return The Builder instance.
+         */
+        public Builder setNumberRaysAdaptive(int numberRaysAdaptive) {
+            camera.numberRaysAdaptive = numberRaysAdaptive;
             return this;
         }
 
@@ -319,14 +463,32 @@ public class Camera implements Cloneable {
         }
 
         /**
+         * set the adaptive
+         *
+         * @return the Camera object
+         */
+        public Builder setAdaptive(boolean adaptive) {
+            camera.adaptive = adaptive;
+            return this;
+        }
+        /**
+         * Enables or disables anti-aliasing.
+         *
+         * @param antiA true to enable, false to disable
+         * @return the builder instance
+         */
+        public Builder setAntiA(boolean antiA) {
+            camera.antiA = antiA;
+            return this;
+        }
+
+        /**
          * Builds and returns the Camera instance.
          *
          * @return the built Camera instance.
          * @throws CloneNotSupportedException if the camera cannot be cloned.
          * @throws MissingResourceException   if any required field is missing.
          */
-
-
         public Camera build() throws CloneNotSupportedException {
             String errorMessage = "Missing rendering data";
             if (camera.vTo == null)
@@ -345,6 +507,8 @@ public class Camera implements Cloneable {
                 throw new MissingResourceException(errorMessage, Camera.class.getName(), "imageWriter");
             if (camera.rayTracer == null)
                 throw new MissingResourceException(errorMessage, Camera.class.getName(), "rayTracer");
+            if (camera.countThread < 0)
+                throw new MissingResourceException("Incorrect data", Camera.class.getName(), "countThread");
             camera.vRight = camera.vTo.crossProduct(camera.vUp).normalize();
 
             return (Camera) camera.clone();

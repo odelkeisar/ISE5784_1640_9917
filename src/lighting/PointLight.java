@@ -15,12 +15,11 @@ import static primitives.Util.isZero;
  * A point light source emits light in all directions from a specific position in space.
  */
 public class PointLight extends Light implements LightSource {
-    private static final Random RND = new Random();
     private Point position;
     private double kC = 1;
     private double kL = 0;
     private double kQ = 0;
-    protected double radius = 12;
+    protected double radius = 6;
 
     /**
      * Constructs a PointLight object with the specified intensity and position.
@@ -125,7 +124,7 @@ public class PointLight extends Light implements LightSource {
      */
     @Override
     public List<Vector> getBeamL(Point point, int countBeam) {
-
+        Random random = new Random();
         if (point.equals(position))
             return null;
 
@@ -149,8 +148,8 @@ public class PointLight extends Light implements LightSource {
 
         // Generate additional beam directions within the specified radius
         for (int counter = 0; counter < countBeam; counter++) {
-            double angle = 2 * Math.PI * RND.nextDouble();  // Random angle
-            double r = radius * Math.sqrt(RND.nextDouble());  // Random radius within the circle
+            double angle = 2 * Math.PI * random.nextDouble();  // Random angle
+            double r = radius * Math.sqrt(random.nextDouble());  // Random radius within the circle
 
             double x = r * Math.cos(angle);  // X coordinate
             double y = r * Math.sin(angle);  // Y coordinate

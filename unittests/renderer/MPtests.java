@@ -103,7 +103,7 @@ public class MPtests {
     @Test
     public void megaTestWithImprovements() throws CloneNotSupportedException {
 
-        cameraBuilder.setRayTracer((new SimpleRayTracer(scene, true, true))).setLocation(new Point(0, 0, 1000)).setVpDistance(1000).setVpSize(200, 200)
+        cameraBuilder.setRayTracer((new SimpleRayTracer(scene, true))).setAntiA(true).setLocation(new Point(0, 0, 1000)).setVpDistance(1000).setVpSize(200, 200)
                 .setImageWriter(new ImageWriter("image_with_improvements", 1000, 1000)).build().renderImage().writeToImage();
 
     }
