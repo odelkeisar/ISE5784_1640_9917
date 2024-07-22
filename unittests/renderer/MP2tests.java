@@ -5,9 +5,7 @@ import lighting.*;
 import org.junit.jupiter.api.Test;
 import primitives.*;
 import scene.Scene;
-
 import java.util.concurrent.TimeUnit;
-
 import static java.awt.Color.*;
 import static java.awt.Color.GRAY;
 
@@ -121,23 +119,43 @@ public class MP2tests {
         scene.lights.add(new SpotLight(new Color(500, 400, 300), new Point(60, 50, 0), new Vector(0, 0, -1)) //
                 .setKl(4E-5).setKq(2E-7));
         scene.lights.add(new SpotLight(new Color(500, 500, 400), new Point(10, 60, 0), new Vector(45, -25, 100)) //
-                .setKl(4E-5).setKq(2E-7));
+             .setKl(4E-5).setKq(2E-7));
         scene.lights.add(new SpotLight(new Color(ORANGE), new Point(0, 50, 10), new Vector(90, -42, -8)) //
                 .setKl(4E-5).setKq(2E-7));
         scene.lights.add(new SpotLight(new Color(500, 300, 200), new Point(0, 20, 10), new Vector(40, -90, 50)) //
                 .setKl(4E-5).setKq(2E-7));
 
     }
-
-
     /**
-     * Test method to render the scene without any improvements.
+     * Test method to render the scene without any speed improvements and without any resolution improvements.
      */
     @Test
     public void megaTest2() throws CloneNotSupportedException {
         long startTime = System.currentTimeMillis(); // זמן התחלה
         cameraBuilder
-                .setRayTracer((new SimpleRayTracer(scene, true).setCountBeam(20)))
+                .setRayTracer((new SimpleRayTracer(scene)))
+                .setLocation(new Point(0, 0, 1000))
+                .setVpDistance(1000)
+                .setVpSize(200, 200)
+                .setImageWriter(new ImageWriter("image_MP2", 1000, 1000))
+                .build().renderImage().writeToImage();
+
+        long endTime = System.currentTimeMillis(); // זמן סיום
+        long durationMillis = endTime - startTime; // חישוב משך הזמן במילישניות
+        long durationSecond = TimeUnit.MILLISECONDS.toSeconds(durationMillis); // המרת מילישניות לשניות
+
+        System.out.println("Runtime without improvement: " + durationSecond + " seconds");
+    }
+
+
+    /**
+     * Test method to render the scene without any speed improvements.
+     */
+    @Test
+    public void megaTest2_slow() throws CloneNotSupportedException {
+        long startTime = System.currentTimeMillis(); // זמן התחלה
+        cameraBuilder
+                .setRayTracer((new SimpleRayTracer(scene, true).setCountBeam(50)))
                 .setAntiA(true)
                 .setLocation(new Point(0, 0, 1000))
                 .setVpDistance(1000)
@@ -249,7 +267,7 @@ public class MP2tests {
         long startTime = System.currentTimeMillis(); // זמן התחלה
 
         cameraBuilder
-                .setRayTracer((new SimpleRayTracer(scene, true).setCountBeam(15)))
+                .setRayTracer((new SimpleRayTracer(scene, true).setCountBeam(50)))
                 .setAntiA(true)
                 .setAdaptive(true)
                 .setCountThread(6)
