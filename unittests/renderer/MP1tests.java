@@ -2,7 +2,6 @@ package renderer;
 
 import scene.*;
 import primitives.*;
-import renderer.*;
 import lighting.*;
 import geometries.*;
 import org.junit.jupiter.api.Test;
@@ -15,7 +14,7 @@ import static java.awt.Color.*;
  * 2. megaTestWithImprovements - Renders the scene with specified improvements.
  */
 
-public class MPtests {
+public class MP1tests {
     private final Scene scene = new Scene("Test scene");
     /**
      * Camera builder for the tests with triangles
@@ -24,7 +23,7 @@ public class MPtests {
             .setDirection(new Vector(0, 0, -1), new Vector(0, 1, 0))
             .setRayTracer(new SimpleRayTracer(scene));
 
-    public MPtests() {
+    public MP1tests() {
 
         scene.setAmbientLight(new AmbientLight(new Color(WHITE), 0.15));
 
