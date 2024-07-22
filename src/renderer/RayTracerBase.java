@@ -66,25 +66,4 @@ public abstract class RayTracerBase {
     public boolean isSoftShadows() {
         return softShadows;
     }
-
-//    /**
-//     * Abstract method for adaptive super-sampling.
-//     * This method is intended to be overridden by subclasses to implement the adaptive super-sampling algorithm.
-//     * The algorithm recursively divides a given segment into smaller sub-segments to determine the color by tracing
-//     * rays through the scene. The goal is to optimize rendering by reducing the number of rays traced while maintaining
-//     * image quality.
-//     *
-//     * @param centerP    The center point of the current segment.
-//     * @param Width      The width of the current segment.
-//     * @param Height     The height of the current segment.
-//     * @param minWidth   The minimum width for a segment to stop further subdivision.
-//     * @param minHeight  The minimum height for a segment to stop further subdivision.
-//     * @param cameraLoc  The location of the camera.
-//     * @param vRight     The right vector from the camera.
-//     * @param Vup        The up vector from the camera.
-//     * @param prePoints  The list of previously processed points to avoid redundant calculations.
-//     * @return The color of the segment after adaptive super-sampling.
-//     */
-//    public abstract Color AdaptiveSuperSamplingHelper(Point centerP, double Width, double Height, double minWidth, double minHeight, Point cameraLoc, Vector vRight, Vector Vup, List<Point> prePoints);
-
     }
